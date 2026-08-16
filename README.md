@@ -51,6 +51,14 @@ The template starts out very basic, but might receive additional features over t
    cmake --build build
    ```
 
+   Building with debug symbols
+   ```
+   cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
+   cmake --build build --config Debug
+   ```
+
+   To use .vscode launch/tasks.json, you would need to run LCtrl + LShift + P >> `WSL: Open Folder in WSL`
+
 9. Enjoy!
 
 ### Visual Studio
@@ -63,6 +71,8 @@ Using a Visual Studio workspace is the simplest way to get started on windows.
 4. If not, you can [clone it directly in Visual Studio](https://learn.microsoft.com/en-us/visualstudio/get-started/tutorial-open-project-from-repo).
 
 Visual Studio should automatically configure the CMake project, then you can build and run as normal through Visual Studio. See the links above for more details.
+
+
 
 ## Upgrading SFML
 

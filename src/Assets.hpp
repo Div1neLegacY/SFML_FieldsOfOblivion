@@ -18,7 +18,7 @@ enum SpriteID
 	SPRITE_WHITE,
 	SPRITE_DICE,
 	// Player Sprites
-	SPRITE_CELESTE,
+	SPRITE_PLAYER,
 	SPRITE_CELESTE_RUN,
 	SPRITE_CELESTE_ATTACK,
 	// Sprite Solids
@@ -66,7 +66,7 @@ Sprite get_sprite(SpriteID spriteID)
 			break;
 		}
 
-		case SPRITE_CELESTE:
+		case SPRITE_PLAYER:
 		{
 			sprite.rectangle.position = {112, 0};
 			sprite.rectangle.size = {17, 20};

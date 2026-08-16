@@ -5,6 +5,14 @@ const sf::String GAME_TITLE = "Fields of Oblivion";
 const std::filesystem::path GAME_TITLE_FONT_PATH = "assets/fonts/Star Crush.ttf";
 const sf::Font GAME_TITLE_FONT = sf::Font(GAME_TITLE_FONT_PATH);
 const sf::Texture SPRITE_BUTTON_PLAY_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_BUTTON_PLAY).rectangle);
+const sf::Texture SPRITE_PLAYER_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_PLAYER).rectangle);
+const sf::Texture SPRITE_TILE_GRASS_01_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_TILE_GRASS_01).rectangle);
+const sf::Color BUTTON_HOVER_COLOR(50, 170, 90);   // Soft emerald green
+
+
 const unsigned int WINDOW_WIDTH = 1280;
 const unsigned int WINDOW_HEIGHT = 720;
-const sf::Color BUTTON_HOVER_COLOR(50, 170, 90);   // Soft emerald green
+constexpr int TILE_SIZE = 95;
+const sf::Vector2f BACKGROUND_TILE_SCALE{2, 2};
+const unsigned int NUM_OF_BACKGROUND_TILE_COLUMNS = 7;
+const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4;
