@@ -14,5 +14,14 @@ const unsigned int WINDOW_WIDTH = 1280;
 const unsigned int WINDOW_HEIGHT = 720;
 constexpr int TILE_SIZE = 95;
 const sf::Vector2f BACKGROUND_TILE_SCALE{2, 2};
-const unsigned int NUM_OF_BACKGROUND_TILE_COLUMNS = 7;
-const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4;
+// Window is around 7x4 tiles, but we use an extra padding of 1+ tile to accommodate
+// for the wrap-around mechanics of an infinite looping background. For a 1+ tile
+// padding, this will wrap the entire background in an additional layer giving us
+// +2x in both x and y directions.
+const unsigned int BEYOND_SCREEN_TILE_PADDING = 1;
+const unsigned int NUM_OF_BACKGROUND_TILE_COLUMNS = 7 + (2 * BEYOND_SCREEN_TILE_PADDING);
+const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PADDING);
+
+
+const unsigned int TOTAL_GRID_WIDTH = 4;
+const unsigned int TOTAL_GRID_HEIGHT = 4;

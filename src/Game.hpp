@@ -21,6 +21,7 @@ public:
 
 	void updateInput();
 	void updateGUI();
+	void updateBackground();
 	void updateWorld();
 	void updatePollEvents();
 	// **DLL Hot Reloading**
@@ -34,6 +35,7 @@ public:
 	//void renderGUI();
 	//void renderWorld();
 	void render();
+	void renderPlaying();
 
     bool isOpen() const
     {
@@ -43,6 +45,8 @@ public:
 private:
     //Private functions
 	void initMainMenu();
+	void initPauseMenu();
+	void updatePauseMenu();
 	//void initGUI();
 	void initWorld();
 	//void initSystems();
@@ -57,6 +61,13 @@ private:
     // Elements we want to keep pointers to for additional manipulation
     sf::Sprite* playButton;
     sf::Sprite* player;
+
+	std::vector<sf::Drawable*> pauseMenuElements;
+	sf::Text* pauseMenuText;
+	sf::Text* title;
+
+	//Camera
+	sf::View* playerCamera;
     GameState currentState = GameState::MainMenu;
 
 	//Array<IRect, NUM_OF_TILE_ROWS * NUM_OF_TILE_COLUMNS> backgroundTiles;

@@ -11,6 +11,8 @@ Game::Game()
     window = new sf::RenderWindow( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), "Fields of Oblivion" );
 
     initMainMenu();
+    // Just initialize the pause menu, but don't load it yet.
+    initPauseMenu();
 }
 
 Game::~Game()
@@ -56,20 +58,39 @@ void Game::initMainMenu()
     std::cout << "Main Menu Initialized." << std::endl;
 }
 
+void Game::initPauseMenu()
+{
+    sf::Text* pauseMenuText = new sf::Text(GAME_TITLE_FONT, sf::String("PAUSE MENU PLACEHOLDER"), 50);
+    pauseMenuText->setFillColor(sf::Color::White);
+    // @todo Is this really necessary? It seems to be a workaround for a bug in SFML 2.5.1 where the text's origin is not set correctly when using a custom font.
+	// Center the title's origin to allow easy horizontal alignment
+	pauseMenuText->setOrigin(pauseMenuText->getLocalBounds().getCenter());
+
+	// Position: Horizontal center, 80 pixels down from the top edge
+	pauseMenuText->setPosition(sf::Vector2f{WINDOW_WIDTH / 2.0f, 80.0f});
+    pauseMenuElements.push_back(pauseMenuText);
+    this->pauseMenuText = pauseMenuText;
+}
+
+void Game::updatePauseMenu()
+{
+    pauseMenuText->setPosition(playerCamera->getCenter());
+}
+
 void Game::initWorld()
 {
     /**
      * GENERATE BACKGROUND TILES
      */
-    // Start background tile positioning at the left-side of the window
-    float startingXPos = 0;
+    // Start background tile positioning at 1-tile beyond the left-side of the window
+    float startingXPos = -TILE_SIZE;
 
     // Dynamically generate tiles for background based on # of columns and rows
     for (int column = 0; column < NUM_OF_BACKGROUND_TILE_COLUMNS; column++)
     {
-        // Start background tile positioning at the top of the window.
+        // Start background tile positioning at 1-tile beyond the top of the window.
         // Each new column of tiles added will reset back to top of window.
-        float startingYPos = 0;
+        float startingYPos = -TILE_SIZE;
         for (int row = 0; row < NUM_OF_BACKGROUND_TILE_ROWS; row++)
         {
             sf::Sprite* background = new sf::Sprite(SPRITE_TILE_GRASS_01_TEXTURE);
@@ -95,6 +116,7 @@ void Game::initWorld()
 	player->setPosition(sf::Vector2f{WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f});
     // Save pointer later to do more with the button (like hover detection)
     this->player = player;
+    this->playerCamera = new sf::View(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
 }
 
 void Game::updateDll()
@@ -178,6 +200,7 @@ void Game::update()
     updateDll();
     updateInput();
     updateGUI();
+    updatePauseMenu();
     updatePollEvents();
     if (currentState == GameState::Playing)
     {
@@ -202,6 +225,10 @@ void Game::update()
     }
 }
 
+/**
+ * @brief Continuously polls for SFML events. Events captured here are executed once,
+ * then deleted from the internal queue.
+ */
 void Game::updatePollEvents()
 {
 	// Process events
@@ -209,7 +236,24 @@ void Game::updatePollEvents()
     {
         // Close window: exit
         if (event->is<sf::Event::Closed>())
+        {
             window->close();
+        }
+
+        if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) 
+        {
+            if (keyPressed->code == sf::Keyboard::Key::Escape) 
+            {
+                if (currentState == GameState::Playing)
+                {
+                    currentState = GameState::Paused;
+                }
+                else if (currentState == GameState::Paused)
+                {
+                    currentState = GameState::Playing;
+                }
+            }
+        }
     }
 }
 
@@ -250,12 +294,80 @@ void Game::updateInput()
             player->move(sf::Vector2f(0, -1));
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
             player->move(sf::Vector2f(0, 1));
+
+        playerCamera->setCenter(player->getPosition());
+    }
+}
+
+/**
+ * Updates background sprite tiles to create an infinite background loop. Whenever
+ * tiles are no longer on screen, use a conveyor-belt like system that wraps them
+ * back around to be back in view of player camera. 
+ */
+void Game::updateBackground()
+{
+    if (!playerCamera)
+    {
+        return;
+    }
+
+    const sf::Vector2f cameraCenter = playerCamera->getCenter();
+    const sf::Vector2f cameraHalfSize = playerCamera->getSize() * 0.5f;
+    const float tileWidth = TILE_SIZE * BACKGROUND_TILE_SCALE.x;
+    const float tileHeight = TILE_SIZE * BACKGROUND_TILE_SCALE.y;
+    const float gridWidth = NUM_OF_BACKGROUND_TILE_COLUMNS * tileWidth;
+    const float gridHeight = NUM_OF_BACKGROUND_TILE_ROWS * tileHeight;
+
+    const float cameraLeft = cameraCenter.x - cameraHalfSize.x;
+    const float cameraRight = cameraCenter.x + cameraHalfSize.x;
+    const float cameraTop = cameraCenter.y - cameraHalfSize.y;
+    const float cameraBottom = cameraCenter.y + cameraHalfSize.y;
+
+    for (auto& tile : backgroundSprites)
+    {
+        sf::Vector2f tilePosition = tile.getPosition();
+        const sf::FloatRect tileBounds = tile.getGlobalBounds();
+
+        const float tileLeft = tilePosition.x;
+        const float tileRight = tilePosition.x + tileBounds.size.x;
+        const float tileTop = tilePosition.y;
+        const float tileBottom = tilePosition.y + tileBounds.size.y;
+
+        if (tileRight < cameraLeft)
+        {
+            tilePosition.x += gridWidth;
+        }
+        else if (tileLeft > cameraRight)
+        {
+            tilePosition.x -= gridWidth;
+        }
+
+        if (tileBottom < cameraTop)
+        {
+            tilePosition.y += gridHeight;
+        }
+        else if (tileTop > cameraBottom)
+        {
+            tilePosition.y -= gridHeight;
+        }
+
+        tile.setPosition(tilePosition);
     }
 }
 
 void Game::updateWorld()
 {
-    
+    updateBackground();
+}
+
+void Game::renderPlaying()
+{
+    // Apply your custom camera view before drawing world objects
+    window->setView(*playerCamera);
+    for (const auto& element : backgroundSprites) {
+        window->draw(element);
+    }
+    window->draw(*player);
 }
 
 void Game::render()
@@ -270,10 +382,16 @@ void Game::render()
             break;
 
         case GameState::Playing:
-            for (const auto& element : backgroundSprites) {
-                window->draw(element);
+            renderPlaying();
+            break;
+
+        case GameState::Paused:
+            // Continue to render anything in the Playing state (world, player, etc.)
+            renderPlaying();
+            // Render PauseMenu elements over the current game state
+            for (const auto& element : pauseMenuElements) {
+                window->draw(*element);
             }
-            window->draw(*player);
             break;
     }
 
