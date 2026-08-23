@@ -109,12 +109,12 @@ void Game::initWorld()
     /**
      * SPAWN PLAYER AT CENTER
      */
-    sf::Sprite* player = new sf::Sprite(SPRITE_PLAYER_TEXTURE);
+    // Save pointer later to do more with the sprite
+    AnimatedSprite* player = new AnimatedSprite(SPRITE_PLAYER_TEXTURE, 13);
 	player->setScale(sf::Vector2f{2, 2});
 	// Re-adjust the origin to the center of the sprite for proper positioning after scaling up
 	player->setOrigin(player->getLocalBounds().getCenter());
 	player->setPosition(sf::Vector2f{WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f});
-    // Save pointer later to do more with the button (like hover detection)
     this->player = player;
     this->playerCamera = new sf::View(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
 }
@@ -195,11 +195,11 @@ void Game::updateDll()
     // }
 }
 
-void Game::update()
+void Game::update(float dt)
 {
     updateDll();
-    updateInput();
     updateGUI();
+    updateInput();
     updatePauseMenu();
     updatePollEvents();
     if (currentState == GameState::Playing)
@@ -223,6 +223,8 @@ void Game::update()
         // Set back to normal colors
         playButton->setColor(sf::Color::White);
     }
+
+    player->update();
 }
 
 /**
@@ -282,18 +284,51 @@ void Game::updateGUI()
 
 void Game::updateInput()
 {
-    std::cout << player->getPosition().x << ", " << player->getPosition().y << std::endl;
+    float activeXMovement = 0.f;
+    float activeYMovement = 0.f;
     if (currentState == GameState::Playing)
     {
         // Player Inputs
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
-            player->move(sf::Vector2f(-1, 0));
+        {
+            player->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
+            activeXMovement = -1.f;
+        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
-            player->move(sf::Vector2f(1, 0));
+        {
+            player->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
+            activeXMovement = 1.f;
+        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
-            player->move(sf::Vector2f(0, -1));
+        {
+            activeYMovement = -1.f;
+        }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
-            player->move(sf::Vector2f(0, 1));
+        {
+            activeYMovement = 1.f;
+        }
+
+        if ((activeXMovement != 0) || (activeYMovement != 0))
+        {
+            player->setState(AnimationState::MOVING);
+            // If we have both x and y movements, normalize the speed so we don't go faster when combining the movements
+            if ((activeXMovement != 0) && (activeYMovement != 0))
+            {
+                // True vector normalization
+                float magnitude = std::sqrt((activeXMovement * activeXMovement) + (activeYMovement * activeYMovement));
+                if (magnitude > 0.0f)
+                {
+                    activeXMovement /= magnitude;
+                    activeYMovement /= magnitude;
+                }
+            }
+
+            player->move(sf::Vector2f(activeXMovement, activeYMovement));
+        }
+        else
+        {
+            player->setState(AnimationState::IDLE);
+        }
 
         playerCamera->setCenter(player->getPosition());
     }
@@ -372,7 +407,6 @@ void Game::renderPlaying()
 
 void Game::render()
 {
-    std::cout << "Current Game State: " << (currentState == GameState::MainMenu ? "Main Menu" : "Playing") << std::endl;
     window->clear(sf::Color(30, 30, 30)); // Dark background
 	switch (currentState) {
         case GameState::MainMenu:

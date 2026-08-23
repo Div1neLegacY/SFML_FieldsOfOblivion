@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics.hpp>
 #include "Assets.hpp"
@@ -8,6 +10,10 @@ const sf::Texture SPRITE_BUTTON_PLAY_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, 
 const sf::Texture SPRITE_PLAYER_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_PLAYER).rectangle);
 const sf::Texture SPRITE_TILE_GRASS_01_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_TILE_GRASS_01).rectangle);
 const sf::Color BUTTON_HOVER_COLOR(50, 170, 90);   // Soft emerald green
+
+// Define the global values in exactly one source file
+const int GLOBAL_SPRITE_FRAME_WIDTH = 17;
+const int GLOBAL_SPRITE_FRAME_HEIGHT = 20;
 
 
 const unsigned int WINDOW_WIDTH = 1280;
@@ -21,7 +27,3 @@ const sf::Vector2f BACKGROUND_TILE_SCALE{2, 2};
 const unsigned int BEYOND_SCREEN_TILE_PADDING = 1;
 const unsigned int NUM_OF_BACKGROUND_TILE_COLUMNS = 7 + (2 * BEYOND_SCREEN_TILE_PADDING);
 const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PADDING);
-
-
-const unsigned int TOTAL_GRID_WIDTH = 4;
-const unsigned int TOTAL_GRID_HEIGHT = 4;

@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System/String.hpp>
 #include <filesystem>
+#include "AnimatedSprite.hpp"
 
 enum class GameState {
     MainMenu,
@@ -30,7 +31,7 @@ public:
 	//void updateBullets();
 	//void updateEnemies();
 	//void updateCombat();
-	void update();
+	void update(float dt);
 
 	//void renderGUI();
 	//void renderWorld();
@@ -60,7 +61,10 @@ private:
     std::vector<sf::Drawable*> mainMenuElements;
     // Elements we want to keep pointers to for additional manipulation
     sf::Sprite* playButton;
-    sf::Sprite* player;
+	// @todo Do later
+    //std::unique_ptr<AnimatedSprite> player;
+	AnimatedSprite* player;
+	//sf::Sprite* player;
 
 	std::vector<sf::Drawable*> pauseMenuElements;
 	sf::Text* pauseMenuText;

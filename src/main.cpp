@@ -4,10 +4,14 @@ int main()
 {
 	Game Game;
 
+	sf::Clock deltaClock;
+
 	// Game loop
 	while ( Game.isOpen() )
 	{
-		Game.update();
+		float dt = deltaClock.restart().asSeconds();
+
+		Game.update(dt);
 		Game.render();
 	}
 
