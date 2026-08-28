@@ -2,6 +2,7 @@
 #include "Main.hpp"
 #include "Game.hpp"
 #include "GameHotReload.hpp"
+#include "Utilities.hpp"
 #include <filesystem>
 #include <iostream>
 
@@ -9,6 +10,7 @@
 Game::Game()
 {
     window = new sf::RenderWindow( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), "Fields of Oblivion" );
+    player = new Player();
 
     initMainMenu();
     // Just initialize the pause menu, but don't load it yet.
@@ -17,7 +19,7 @@ Game::Game()
 
 Game::~Game()
 {
-    delete window;
+    delete window, player;
 }
 
 void Game::run()
@@ -49,7 +51,7 @@ void Game::initMainMenu()
 	playButton->setScale(sf::Vector2f{5, 5});
 	// Re-adjust the origin to the center of the sprite for proper positioning after scaling up
 	playButton->setOrigin(playButton->getLocalBounds().getCenter());
-	playButton->setPosition(sf::Vector2f{WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f});
+	playButton->setPosition(WINDOW_CENTER);
     // Save pointer later to do more with the button (like hover detection)
     this->playButton = playButton;
 
@@ -74,7 +76,7 @@ void Game::initPauseMenu()
 
 void Game::updatePauseMenu()
 {
-    pauseMenuText->setPosition(playerCamera->getCenter());
+    pauseMenuText->setPosition(player->camera->getCenter());
 }
 
 void Game::initWorld()
@@ -106,17 +108,26 @@ void Game::initWorld()
         startingXPos += (TILE_SIZE * BACKGROUND_TILE_SCALE.x);
     }
 
-    /**
-     * SPAWN PLAYER AT CENTER
-     */
-    // Save pointer later to do more with the sprite
-    AnimatedSprite* player = new AnimatedSprite(SPRITE_PLAYER_TEXTURE, 13);
-	player->setScale(sf::Vector2f{2, 2});
+    // Health bar, currently not attached to player
+    auto* healthBar = new sf::RectangleShape(sf::Vector2f(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT));
+    healthBar->setFillColor(sf::Color::Green);
+    // Center on screen by moving to middle, than adjusting based on size
+    healthBar->setPosition(WINDOW_CENTER);
+    healthBar->move(sf::Vector2f{-(HEALTH_BAR_WIDTH / 2), -(HEALTH_BAR_HEIGHT / 2)});
+    // Additionally move down below player
+    healthBar->move(sf::Vector2f{0, 30.f});
+    healthBar->setOutlineThickness(1.0f);
+    healthBar->setOutlineColor(sf::Color::White);
+    this->healthBar = healthBar;
+    playingUIElements.push_back(healthBar);
+
+    // Generate starting enemies
+    sf::Sprite* enemy = new sf::Sprite(SPRITE_ENEMY_TEXTURE);
+    enemy->setPosition(sf::Vector2f{0, 0});
+    enemy->setScale(sf::Vector2f{2, 2});
 	// Re-adjust the origin to the center of the sprite for proper positioning after scaling up
-	player->setOrigin(player->getLocalBounds().getCenter());
-	player->setPosition(sf::Vector2f{WINDOW_WIDTH / 2.0f, WINDOW_HEIGHT / 2.0f});
-    this->player = player;
-    this->playerCamera = new sf::View(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
+	enemy->setOrigin(enemy->getLocalBounds().getCenter());
+    this->enemies.push_back(enemy);
 }
 
 void Game::updateDll()
@@ -204,7 +215,7 @@ void Game::update(float dt)
     updatePollEvents();
     if (currentState == GameState::Playing)
     {
-        updateWorld();
+        updateWorld(dt);
     }
 
     // 4. Hover Detection Logic
@@ -224,7 +235,7 @@ void Game::update(float dt)
         playButton->setColor(sf::Color::White);
     }
 
-    player->update();
+    player->sprite->update(dt);
 }
 
 /**
@@ -291,12 +302,12 @@ void Game::updateInput()
         // Player Inputs
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
         {
-            player->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
+            player->sprite->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
             activeXMovement = -1.f;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
         {
-            player->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
+            player->sprite->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
             activeXMovement = 1.f;
         }
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
@@ -310,7 +321,7 @@ void Game::updateInput()
 
         if ((activeXMovement != 0) || (activeYMovement != 0))
         {
-            player->setState(AnimationState::MOVING);
+            player->sprite->setState(AnimationState::MOVING);
             // If we have both x and y movements, normalize the speed so we don't go faster when combining the movements
             if ((activeXMovement != 0) && (activeYMovement != 0))
             {
@@ -322,15 +333,16 @@ void Game::updateInput()
                     activeYMovement /= magnitude;
                 }
             }
-
-            player->move(sf::Vector2f(activeXMovement, activeYMovement));
+            float arbitrary_scale = 0.5f;
+            player->sprite->move(sf::Vector2f(activeXMovement * arbitrary_scale, activeYMovement * arbitrary_scale));
         }
         else
         {
-            player->setState(AnimationState::IDLE);
+            player->sprite->setState(AnimationState::IDLE);
         }
 
-        playerCamera->setCenter(player->getPosition());
+        player->camera->setCenter(player->sprite->getPosition());
+        player->healthBar->update(100.f);
     }
 }
 
@@ -341,13 +353,13 @@ void Game::updateInput()
  */
 void Game::updateBackground()
 {
-    if (!playerCamera)
+    if (!player->camera)
     {
         return;
     }
 
-    const sf::Vector2f cameraCenter = playerCamera->getCenter();
-    const sf::Vector2f cameraHalfSize = playerCamera->getSize() * 0.5f;
+    const sf::Vector2f cameraCenter = player->camera->getCenter();
+    const sf::Vector2f cameraHalfSize = player->camera->getSize() * 0.5f;
     const float tileWidth = TILE_SIZE * BACKGROUND_TILE_SCALE.x;
     const float tileHeight = TILE_SIZE * BACKGROUND_TILE_SCALE.y;
     const float gridWidth = NUM_OF_BACKGROUND_TILE_COLUMNS * tileWidth;
@@ -390,24 +402,62 @@ void Game::updateBackground()
     }
 }
 
-void Game::updateWorld()
+void Game::updateEnemies(float dt)
+{
+    // 1. Tick down the invincibility timer using delta time
+    if (invincibilityTimer > 0.0f)
+    {
+        invincibilityTimer -= dt;
+    }
+
+    for (const auto& enemy : enemies) {
+        moveTowardsPlayer(dt, enemy, player->sprite);
+        bool enemyCollision = checkCollision(enemy, player->sprite);
+        // 2. Only damage the player if they are NOT currently invincible
+        if (enemyCollision && invincibilityTimer <= 0.0f)
+        {
+            // @todo Fix
+            printf("PLAYER ATTACKED!");
+            int arbitraryNum = 10;
+            currentHealth -= arbitraryNum;
+            sf::Vector2 size = healthBar->getSize();
+            size.x - (HEALTH_BAR_WIDTH / arbitraryNum);
+            healthBar->setSize(size);
+            
+            // 3. Reset the timer to trigger the cooldown period
+            invincibilityTimer = safeDuration; 
+            
+            // Optional: Break out early so multiple overlapping enemies 
+            // don't stack damage on the exact same frame
+            break; 
+        }
+    }
+}
+
+void Game::updateWorld(float dt)
 {
     updateBackground();
+    updateEnemies(dt);
 }
 
 void Game::renderPlaying()
 {
-    // Apply your custom camera view before drawing world objects
-    window->setView(*playerCamera);
     for (const auto& element : backgroundSprites) {
         window->draw(element);
     }
-    window->draw(*player);
+
+    window->draw(*player->sprite);
+
+    for (const auto& enemy : enemies) {
+        window->draw(*enemy);
+    }
 }
 
 void Game::render()
 {
     window->clear(sf::Color(30, 30, 30)); // Dark background
+
+
 	switch (currentState) {
         case GameState::MainMenu:
             for (const auto& element : mainMenuElements) {
@@ -417,6 +467,17 @@ void Game::render()
 
         case GameState::Playing:
             renderPlaying();
+
+            // Switch to default view for static UI elements
+            window->setView(window->getDefaultView());
+
+            for (const auto& element : playingUIElements) {
+                window->draw(*element);
+            }
+
+            // Apply your custom camera view before drawing world objects
+            window->setView(*player->camera);
+
             break;
 
         case GameState::Paused:

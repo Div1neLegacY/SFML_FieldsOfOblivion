@@ -35,9 +35,11 @@ add_library(game_logic SHARED
 target_compile_features(game_logic PRIVATE cxx_std_17)
 target_link_libraries(game_logic PRIVATE SFML::Graphics)
 
+# When new source files are created, add here
 add_executable(main
     src/Main.cpp
     src/Game.cpp
+    src/Player.cpp
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)

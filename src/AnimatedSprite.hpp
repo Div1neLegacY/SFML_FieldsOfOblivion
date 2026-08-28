@@ -17,7 +17,9 @@ private:
     std::size_t currentFrameIndex;
     int totalFrames;
     AnimationState currentState;
-
+    float elapsedTime = 0.0f;
+    // Change this to adjust animation speed (e.g., 0.1s per frame)
+    float frameDuration = 0.05f;
 
 
 public:
@@ -44,21 +46,31 @@ public:
 
     void setState(AnimationState nextState)
     {
-        std::cout << "Set state to: " << nextState << std::endl;
         currentState = nextState;
     }
 
-    void update()
+    void update(float dt)
     {
         if (totalFrames <= 0) return;
 
         if (currentState == AnimationState::MOVING)
         {
-            currentFrameIndex = (currentFrameIndex + 1) % totalFrames;
+            // Accumulate time passed since last frame
+            elapsedTime += dt;
+
+            // Check if enough time has passed to advance to the next frame
+            if (elapsedTime >= frameDuration)
+            {
+                currentFrameIndex = (currentFrameIndex + 1) % totalFrames;
+                // Reset accumulator while keeping overflow
+                elapsedTime -= frameDuration;
+            }
         }
         else if (currentState == AnimationState::IDLE)
         {
             currentFrameIndex = 0;
+            // Reset time so moving starts fresh instantly
+            elapsedTime = 0.0f;
         }
 
         // Setting the texture rect from cache

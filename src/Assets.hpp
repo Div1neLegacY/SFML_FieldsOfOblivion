@@ -70,7 +70,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {112, 0};
 			sprite.rectangle.size = {221, 20};
-			sprite.frameCount = 12;
+			sprite.frameCount = 13;
 			break;
 		}
 

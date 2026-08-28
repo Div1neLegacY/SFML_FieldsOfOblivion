@@ -4,6 +4,7 @@
 #include <SFML/System/String.hpp>
 #include <filesystem>
 #include "AnimatedSprite.hpp"
+#include "Player.hpp"
 
 enum class GameState {
     MainMenu,
@@ -23,7 +24,8 @@ public:
 	void updateInput();
 	void updateGUI();
 	void updateBackground();
-	void updateWorld();
+	void updateEnemies(float dt);
+	void updateWorld(float dt);
 	void updatePollEvents();
 	// **DLL Hot Reloading**
 	void updateDll();
@@ -59,19 +61,29 @@ private:
 	sf::RenderWindow* window;
     // Main menu Drawable elements
     std::vector<sf::Drawable*> mainMenuElements;
+	// "Playing" Game state UI elements
+	std::vector<sf::Drawable*> playingUIElements;
     // Elements we want to keep pointers to for additional manipulation
     sf::Sprite* playButton;
+
+	// Health Bar
+	sf::RectangleShape* healthBar;
+	int currentHealth = MAX_HEALTH;
+	float invincibilityTimer = 0.0f;
+	const float safeDuration = 1.0f; // Player is safe for 1.0 second after a hit
+
+	// Enemies
+	std::vector<sf::Sprite*> enemies;
+
 	// @todo Do later
     //std::unique_ptr<AnimatedSprite> player;
-	AnimatedSprite* player;
-	//sf::Sprite* player;
+	Player* player;
 
 	std::vector<sf::Drawable*> pauseMenuElements;
 	sf::Text* pauseMenuText;
 	sf::Text* title;
 
 	//Camera
-	sf::View* playerCamera;
     GameState currentState = GameState::MainMenu;
 
 	//Array<IRect, NUM_OF_TILE_ROWS * NUM_OF_TILE_COLUMNS> backgroundTiles;
