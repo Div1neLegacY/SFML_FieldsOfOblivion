@@ -14,6 +14,15 @@ public:
         maxHealth = maxHp;
         currentHealth = maxHp;
 
+        // Health bar, currently not attached to player
+        // this->setFillColor(sf::Color::Green);
+        // // Center on screen by moving to middle, than adjusting based on size
+        // this->setPosition(WINDOW_CENTER);
+        // this->move(sf::Vector2f{-(HEALTH_BAR_WIDTH / 2), -(HEALTH_BAR_HEIGHT / 2)});
+        // // Additionally move down below player
+        // this->move(sf::Vector2f{0, 30.f});
+        // this->setOutlineThickness(1.0f);
+        // this->setOutlineColor(sf::Color::White);
 
         // backgroundBar.setFillColor(sf::Color(50, 50, 50)); // Dark Grey
         // backgroundBar.setPosition(sf::Vector2f(HEALTH_BAR_POS_X, HEALTH_BAR_POS_Y));

@@ -6,17 +6,22 @@
 const sf::String GAME_TITLE = "Fields of Oblivion";
 const std::filesystem::path GAME_TITLE_FONT_PATH = "assets/fonts/Star Crush.ttf";
 const sf::Font GAME_TITLE_FONT = sf::Font(GAME_TITLE_FONT_PATH);
-const sf::Texture SPRITE_BUTTON_PLAY_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_BUTTON_PLAY).rectangle);
-const sf::Texture SPRITE_PLAYER_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_PLAYER).rectangle);
-const sf::Texture SPRITE_TILE_GRASS_01_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_TILE_GRASS_01).rectangle);
-const sf::Texture SPRITE_ENEMY_TEXTURE = sf::Texture(SPRITE_ATLAS_MASTER, false, get_sprite(SPRITE_SOLID_01).rectangle);
+
+/**
+ * Sprite Constants
+ */
+const sf::Texture SPRITE_BUTTON_PLAY_TEXTURE   = sf::Texture(get_sprite(SPRITE_BUTTON_PLAY).file, false, get_sprite(SPRITE_BUTTON_PLAY).rectangle);
+const sf::Texture SPRITE_PLAYER_TEXTURE        = sf::Texture(get_sprite(SPRITE_PLAYER).file, false, get_sprite(SPRITE_PLAYER).rectangle);
+const sf::Texture SPRITE_PLAYER_ATTACK_TEXTURE = sf::Texture(get_sprite(SPRITE_PLAYER_ATTACK).file, false, get_sprite(SPRITE_PLAYER_ATTACK).rectangle);
+const sf::Texture SPRITE_TILE_GRASS_01_TEXTURE = sf::Texture(get_sprite(SPRITE_TILE_GRASS_01).file, false, get_sprite(SPRITE_TILE_GRASS_01).rectangle);
+const sf::Texture SPRITE_ENEMY_TEXTURE         = sf::Texture(get_sprite(SPRITE_SOLID_01).file, false, get_sprite(SPRITE_SOLID_01).rectangle);
+
+
 const sf::Color BUTTON_HOVER_COLOR(50, 170, 90);   // Soft emerald green
 
 // Define the global values in exactly one source file
 const int GLOBAL_SPRITE_FRAME_WIDTH = 17;
 const int GLOBAL_SPRITE_FRAME_HEIGHT = 20;
-
-const int CHARACTER_SCALE = 2;
 
 const unsigned int WINDOW_WIDTH = 1280;
 const unsigned int WINDOW_HEIGHT = 720;
@@ -31,6 +36,23 @@ const unsigned int BEYOND_SCREEN_TILE_PADDING = 1;
 const unsigned int NUM_OF_BACKGROUND_TILE_COLUMNS = 7 + (2 * BEYOND_SCREEN_TILE_PADDING);
 const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PADDING);
 
+/**
+ * Player Constants
+ */
 const unsigned int MAX_HEALTH = 100;
 const unsigned int HIT_DAMAGE = 10;
 const float INVINCIBILITY_DURATION = 0.2f; // Invincibility duration in seconds after taking damage
+const int CHARACTER_SCALE = 2;
+const float ATTACK_COOLDOWN = 1.0f; // Cooldown duration in seconds between attacks
+
+
+/**
+ * Keybinds (KB)
+ */
+// Pause / Unpause
+const auto KB_TOGGLE_PAUSE = sf::Keyboard::Key::Escape;
+// Movements
+const auto KB_MOVE_UP = sf::Keyboard::Key::W;
+const auto KB_MOVE_DOWN = sf::Keyboard::Key::S;
+const auto KB_MOVE_LEFT = sf::Keyboard::Key::A;
+const auto KB_MOVE_RIGHT = sf::Keyboard::Key::D;

@@ -109,6 +109,7 @@ void Game::initWorld()
         startingXPos += (TILE_SIZE * BACKGROUND_TILE_SCALE.x);
     }
 
+    // @todo: Remove when transferred to HealthBar class
     // Health bar, currently not attached to player
     auto* healthBar = new sf::RectangleShape(sf::Vector2f(HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT));
     healthBar->setFillColor(sf::Color::Green);
@@ -237,6 +238,7 @@ void Game::update(float dt)
     }
 
     player->sprite->update(dt);
+    player->update(dt);
 }
 
 /**
@@ -256,7 +258,7 @@ void Game::updatePollEvents()
 
         if (const auto* keyPressed = event->getIf<sf::Event::KeyPressed>()) 
         {
-            if (keyPressed->code == sf::Keyboard::Key::Escape) 
+            if (keyPressed->code == KB_TOGGLE_PAUSE) 
             {
                 if (currentState == GameState::Playing)
                 {
@@ -301,28 +303,28 @@ void Game::updateInput()
     if (currentState == GameState::Playing)
     {
         // Player Inputs
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::A))
+        if (sf::Keyboard::isKeyPressed(KB_MOVE_LEFT))
         {
             player->sprite->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
             activeXMovement = -1.f;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::D))
+        if (sf::Keyboard::isKeyPressed(KB_MOVE_RIGHT))
         {
             player->sprite->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
             activeXMovement = 1.f;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::W))
+        if (sf::Keyboard::isKeyPressed(KB_MOVE_UP))
         {
             activeYMovement = -1.f;
         }
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::S))
+        if (sf::Keyboard::isKeyPressed(KB_MOVE_DOWN))
         {
             activeYMovement = 1.f;
         }
 
         if ((activeXMovement != 0) || (activeYMovement != 0))
         {
-            player->sprite->setState(AnimationState::MOVING);
+            player->sprite->setState(AnimationState::ACTIVE);
             // If we have both x and y movements, normalize the speed so we don't go faster when combining the movements
             if ((activeXMovement != 0) && (activeYMovement != 0))
             {
@@ -344,7 +346,7 @@ void Game::updateInput()
         }
 
         player->camera->setCenter(player->sprite->getPosition());
-        player->healthBar->update(100.f);
+        //player->healthBar->update(100.f);
     }
 }
 
@@ -418,9 +420,6 @@ void Game::updateEnemies(float dt)
         // 2. Only damage the player if they are NOT currently invincible
         if (enemyCollision && invincibilityTimer <= 0.0f)
         {
-            // @todo Fix
-            printf("PLAYER ATTACKED!");
-            fflush(stdout);
             int arbitraryNum = 10;
             currentHealth -= arbitraryNum;
             sf::Vector2 size = healthBar->getSize();
@@ -451,6 +450,7 @@ void Game::renderPlaying()
     }
 
     window->draw(*player->sprite);
+    window->draw(*player->attackAnimationSprite);
 
     for (const auto& enemy : enemies) {
         window->draw(*enemy);

@@ -9,6 +9,7 @@
 // #############################################################################
 
 const std::filesystem::path SPRITE_ATLAS_MASTER = "assets/textures/TEXTURE_ATLAS_MASTER.png";
+const std::filesystem::path SPRITE_ATLAS_SWEEP_ANIMATION = "assets/textures/hit_animations/swing01.png";
 
 // #############################################################################
 //                           Assets Structs
@@ -19,8 +20,7 @@ enum SpriteID
 	SPRITE_DICE,
 	// Player Sprites
 	SPRITE_PLAYER,
-	SPRITE_CELESTE_RUN,
-	SPRITE_CELESTE_ATTACK,
+	SPRITE_PLAYER_ATTACK,
 	// Sprite Solids
 	SPRITE_SOLID_01,
 	SPRITE_SOLID_02,
@@ -38,6 +38,7 @@ enum SpriteID
 struct Sprite
 {
 	sf::IntRect rectangle;
+	std::filesystem::path file;
 	// @todo Still need this frameCount?
 	int frameCount = 1;
 };
@@ -70,14 +71,17 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {112, 0};
 			sprite.rectangle.size = {221, 20};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			sprite.frameCount = 13;
 			break;
 		}
 
-		case SPRITE_CELESTE_ATTACK:
+		case SPRITE_PLAYER_ATTACK:
 		{
-			sprite.rectangle.position = {229, 0};
-			sprite.rectangle.size = {17, 20};
+			sprite.rectangle.position = {0, 0};
+			sprite.rectangle.size = {704, 64};
+			sprite.file = SPRITE_ATLAS_SWEEP_ANIMATION;
+			sprite.frameCount = 11;
 			break;
 		}
 
@@ -85,6 +89,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {0, 16};
 			sprite.rectangle.size = {28, 18};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			break;
 		}
 
@@ -92,6 +97,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {32, 16};
 			sprite.rectangle.size = {16, 13};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			break;
 		}
 
@@ -99,6 +105,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {80, 0};
 			sprite.rectangle.size = {32, 16};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			break;
 		}
 
@@ -106,6 +113,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {80, 16};
 			sprite.rectangle.size = {32, 16};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			break;
 		}
 
@@ -113,6 +121,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {112, 32};
 			sprite.rectangle.size = {95, 95};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			break;
 		}
 

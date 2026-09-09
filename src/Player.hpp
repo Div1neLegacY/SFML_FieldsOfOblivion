@@ -9,9 +9,14 @@ class Player
 public:
 	Player();
 	virtual ~Player();
-    void update();
+    void update(float dt);
 //private:
     AnimatedSprite* sprite;
     sf::View* camera;
-    HealthBar* healthBar;
+    //HealthBar* healthBar;
+    std::unique_ptr<AnimatedSprite> attackAnimationSprite;
+private:
+    // Timer to track the cooldown period between attacks
+    float attackTimer = 0.0f;
+
 };

@@ -8,7 +8,7 @@
 enum AnimationState
 {
     IDLE,
-    MOVING,
+    ACTIVE,
 };
 
 class AnimatedSprite : public sf::Sprite {
@@ -18,24 +18,25 @@ private:
     int totalFrames;
     AnimationState currentState;
     float elapsedTime = 0.0f;
-    // Change this to adjust animation speed (e.g., 0.1s per frame)
     float frameDuration = 0.05f;
+    float cooldownTimer = 0.0f; // Timer for tracking cooldown period
+    float animationCooldownDuration; // Optional cooldown period after completing a full animation cycle
 
 
 public:
-    AnimatedSprite(const sf::Texture& texture, int totalFrames)
+    AnimatedSprite(const sf::Texture& texture, int totalFrames, float animationCooldownDuration = 0.0f, int frameWidth = GLOBAL_SPRITE_FRAME_WIDTH, int frameHeight = GLOBAL_SPRITE_FRAME_HEIGHT)
         : sf::Sprite(texture), currentFrameIndex(0), 
-          totalFrames(totalFrames)
+          totalFrames(totalFrames), animationCooldownDuration(animationCooldownDuration)
     {
-        currentState = AnimationState::IDLE;
+        currentState = AnimationState::ACTIVE;
         
         int startingX = 0;
 
         // Cache option: Pre-allocating rect instances
         for (int i = 0; i < totalFrames; ++i)
         {
-            frames.emplace_back(sf::Vector2i(startingX, 0), sf::Vector2i(GLOBAL_SPRITE_FRAME_WIDTH, GLOBAL_SPRITE_FRAME_HEIGHT));
-            startingX += GLOBAL_SPRITE_FRAME_WIDTH;
+            frames.emplace_back(sf::Vector2i(startingX, 0), sf::Vector2i(frameWidth, frameHeight));
+            startingX += frameWidth;
         }
 
         if (!frames.empty())
@@ -53,7 +54,13 @@ public:
     {
         if (totalFrames <= 0) return;
 
-        if (currentState == AnimationState::MOVING)
+        // if (cooldownTimer > 0.0f)
+        // {
+        //     cooldownTimer -= dt;
+        //     return;
+        // }
+
+        if (currentState == AnimationState::ACTIVE)
         {
             // Accumulate time passed since last frame
             elapsedTime += dt;
@@ -75,5 +82,8 @@ public:
 
         // Setting the texture rect from cache
         setTextureRect(frames[currentFrameIndex]);
+
+        // Reset the timer to trigger the cooldown period
+        //cooldownTimer = animationCooldownDuration; 
     }
 };
