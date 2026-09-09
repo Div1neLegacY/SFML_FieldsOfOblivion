@@ -15,7 +15,9 @@ endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-# @todo Needed for DLL, but why?
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# Position Independent Code (fPIC) allows the library binary machine code 
+# to be mapped into random virtual addresses without breaking relative offsets.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(BUILD_SHARED_LIBS ON)
 
@@ -29,6 +31,7 @@ FetchContent_Declare(SFML
 FetchContent_MakeAvailable(SFML)
 
 # Add DLL library for shared game logic
+# All reloadable code files MUST live inside this library target
 add_library(game_logic SHARED
     src/GameDll.cpp
 )

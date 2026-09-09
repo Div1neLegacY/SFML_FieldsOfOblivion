@@ -2,10 +2,18 @@
 
 #include <iostream>
 
+// Define macro if not already explicitly defined
+#ifndef HOT_RELOAD_EXPORT
+    #ifdef _WIN32
+        #define HOT_RELOAD_EXPORT __declspec(dllexport)
+    #else
+        #define HOT_RELOAD_EXPORT __attribute__((visibility("default")))
+    #endif
+#endif
+
 extern "C" {
-    HOT_RELOAD_EXPORT void hot_reload_set_title(sf::Text& text, const char* newTitle)
+    HOT_RELOAD_EXPORT int hot_reload_get_num()
     {
-        text.setString(sf::String(newTitle));
-        std::cout << "Hot reload title set to: " << newTitle << std::endl;
+        return 32;
     }
 }

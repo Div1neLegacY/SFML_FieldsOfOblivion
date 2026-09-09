@@ -70,7 +70,6 @@ private:
 	sf::RectangleShape* healthBar;
 	int currentHealth = MAX_HEALTH;
 	float invincibilityTimer = 0.0f;
-	const float safeDuration = 1.0f; // Player is safe for 1.0 second after a hit
 
 	// Enemies
 	std::vector<sf::Sprite*> enemies;

@@ -59,6 +59,11 @@ The template starts out very basic, but might receive additional features over t
 
    To use .vscode launch/tasks.json, you would need to run LCtrl + LShift + P >> `WSL: Open Folder in WSL`
 
+   When running exe already, you can hot-reload the game DLL with
+   ```
+   cmake --build build --target game_logic
+   ```
+
 9. Enjoy!
 
 ### Visual Studio

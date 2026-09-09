@@ -5,6 +5,7 @@
 #include "Utilities.hpp"
 #include <filesystem>
 #include <iostream>
+#include <algorithm>
 
 
 Game::Game()
@@ -333,7 +334,8 @@ void Game::updateInput()
                     activeYMovement /= magnitude;
                 }
             }
-            float arbitrary_scale = 0.5f;
+            // Multiplier to adjust movement speed.
+            float arbitrary_scale = 1.0f;
             player->sprite->move(sf::Vector2f(activeXMovement * arbitrary_scale, activeYMovement * arbitrary_scale));
         }
         else
@@ -418,14 +420,16 @@ void Game::updateEnemies(float dt)
         {
             // @todo Fix
             printf("PLAYER ATTACKED!");
+            fflush(stdout);
             int arbitraryNum = 10;
             currentHealth -= arbitraryNum;
             sf::Vector2 size = healthBar->getSize();
-            size.x - (HEALTH_BAR_WIDTH / arbitraryNum);
+            size.x -= (HEALTH_BAR_WIDTH / arbitraryNum);
+            size.x = std::max(size.x, 0.0f);
             healthBar->setSize(size);
             
             // 3. Reset the timer to trigger the cooldown period
-            invincibilityTimer = safeDuration; 
+            invincibilityTimer = INVINCIBILITY_DURATION; 
             
             // Optional: Break out early so multiple overlapping enemies 
             // don't stack damage on the exact same frame

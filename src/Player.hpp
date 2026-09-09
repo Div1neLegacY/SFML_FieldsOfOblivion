@@ -9,6 +9,7 @@ class Player
 public:
 	Player();
 	virtual ~Player();
+    void update();
 //private:
     AnimatedSprite* sprite;
     sf::View* camera;

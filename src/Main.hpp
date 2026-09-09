@@ -33,3 +33,4 @@ const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PAD
 
 const unsigned int MAX_HEALTH = 100;
 const unsigned int HIT_DAMAGE = 10;
+const float INVINCIBILITY_DURATION = 0.2f; // Invincibility duration in seconds after taking damage
