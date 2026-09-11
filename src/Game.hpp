@@ -27,8 +27,6 @@ public:
 	void updateEnemies(float dt);
 	void updateWorld(float dt);
 	void updatePollEvents();
-	// **DLL Hot Reloading**
-	void updateDll();
 	//void updateCollision();
 	//void updateBullets();
 	//void updateEnemies();

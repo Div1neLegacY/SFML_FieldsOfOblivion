@@ -24,16 +24,30 @@ private:
 
 
 public:
-    AnimatedSprite(const sf::Texture& texture, int totalFrames, float animationCooldownDuration = 0.0f, int frameWidth = GLOBAL_SPRITE_FRAME_WIDTH, int frameHeight = GLOBAL_SPRITE_FRAME_HEIGHT)
-        : sf::Sprite(texture), currentFrameIndex(0), 
-          totalFrames(totalFrames), animationCooldownDuration(animationCooldownDuration)
+    AnimatedSprite(
+        const sf::Texture& texture,
+        int totalFrames,
+        float animationCooldownDuration = 0.0f,
+        int frameWidth = GLOBAL_SPRITE_FRAME_WIDTH,
+        int frameHeight = GLOBAL_SPRITE_FRAME_HEIGHT,
+        bool initialSpriteBlank = false)
+            : sf::Sprite(texture), currentFrameIndex(0), 
+            totalFrames(totalFrames), animationCooldownDuration(animationCooldownDuration)
     {
         currentState = AnimationState::ACTIVE;
-        
+
         int startingX = 0;
 
+        // Set an initial blank sprite if requested. Helpful for attack animations where the
+        // player is not attacking and we don't want to show the attack sprite.
+        if (initialSpriteBlank)
+        {
+            frames.emplace_back(sf::Vector2i(0, 0), sf::Vector2i(0, 0));
+            this->totalFrames += 1; // Increase total frames to account for the blank frame
+        }
+
         // Cache option: Pre-allocating rect instances
-        for (int i = 0; i < totalFrames; ++i)
+        for (int i = 0; i < this->totalFrames; ++i)
         {
             frames.emplace_back(sf::Vector2i(startingX, 0), sf::Vector2i(frameWidth, frameHeight));
             startingX += frameWidth;
@@ -50,40 +64,5 @@ public:
         currentState = nextState;
     }
 
-    void update(float dt)
-    {
-        if (totalFrames <= 0) return;
-
-        // if (cooldownTimer > 0.0f)
-        // {
-        //     cooldownTimer -= dt;
-        //     return;
-        // }
-
-        if (currentState == AnimationState::ACTIVE)
-        {
-            // Accumulate time passed since last frame
-            elapsedTime += dt;
-
-            // Check if enough time has passed to advance to the next frame
-            if (elapsedTime >= frameDuration)
-            {
-                currentFrameIndex = (currentFrameIndex + 1) % totalFrames;
-                // Reset accumulator while keeping overflow
-                elapsedTime -= frameDuration;
-            }
-        }
-        else if (currentState == AnimationState::IDLE)
-        {
-            currentFrameIndex = 0;
-            // Reset time so moving starts fresh instantly
-            elapsedTime = 0.0f;
-        }
-
-        // Setting the texture rect from cache
-        setTextureRect(frames[currentFrameIndex]);
-
-        // Reset the timer to trigger the cooldown period
-        //cooldownTimer = animationCooldownDuration; 
-    }
+    void update(float dt);
 };

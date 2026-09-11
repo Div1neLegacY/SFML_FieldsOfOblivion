@@ -11,7 +11,13 @@ Player::Player()
     this->camera = new sf::View(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
     //this->healthBar = new HealthBar(100.f);
 
-    attackAnimationSprite = std::make_unique<AnimatedSprite>(SPRITE_PLAYER_ATTACK_TEXTURE, get_sprite(SPRITE_PLAYER_ATTACK).frameCount, ATTACK_COOLDOWN, 64, 64);
+    attackAnimationSprite = std::make_unique<AnimatedSprite>(
+        SPRITE_PLAYER_ATTACK_TEXTURE,
+        get_sprite(SPRITE_PLAYER_ATTACK).frameCount,
+        ATTACK_COOLDOWN,
+        64, 64,
+        true
+    );
 }
 
 Player::~Player()
@@ -22,5 +28,9 @@ Player::~Player()
 void Player::update(float dt)
 {
     attackAnimationSprite->update(dt);
-    attackAnimationSprite->setPosition(sprite->getPosition());
+
+    // Get Sprite center
+    sf::Vector2f center = sprite->getPosition() - (static_cast<sf::Vector2f>(sprite->getTextureRect().size));
+
+    attackAnimationSprite->setPosition(center);
 } 

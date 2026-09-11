@@ -1,7 +1,6 @@
 #include "Assets.hpp"
 #include "Main.hpp"
 #include "Game.hpp"
-#include "GameHotReload.hpp"
 #include "Utilities.hpp"
 #include <filesystem>
 #include <iostream>
@@ -11,6 +10,8 @@
 Game::Game()
 {
     window = new sf::RenderWindow( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), "Fields of Oblivion" );
+    window->setFramerateLimit(144);
+	window->setVerticalSyncEnabled(false);
     player = new Player();
 
     initMainMenu();
@@ -132,85 +133,8 @@ void Game::initWorld()
     this->enemies.push_back(enemy);
 }
 
-void Game::updateDll()
-{
-    const std::filesystem::path dllPath = "game_logic.dll";
-
-    if (!std::filesystem::exists(dllPath))
-    {
-        return;
-    }
-
-    const auto now = std::filesystem::last_write_time(dllPath);
-
-    // @todo Fix later
-    // if (!dllHandle)
-    // {
-    //     dllHandle = LoadLibraryA(dllPath.string().c_str());
-    //     if (!dllHandle)
-    //     {
-    //         std::cout << "Failed to load game_logic.dll\n";
-    //         return;
-    //     }
-
-    //     dllSetTitle = reinterpret_cast<SetTitleFn>(
-    //         GetProcAddress(static_cast<HMODULE>(dllHandle), "hot_reload_set_title"));
-
-    //     if (!dllSetTitle)
-    //     {
-    //         std::cout << "DLL missing hot_reload_set_title export\n";
-    //         FreeLibrary(static_cast<HMODULE>(dllHandle));
-    //         dllHandle = nullptr;
-    //         return;
-    //     }
-
-    //     dllLastWrite = now;
-    // }
-
-    // if (now != dllLastWrite)
-    // {
-    //     std::cout << "Reloading DLL...\n";
-    //     const auto oldHandle = dllHandle;
-    //     dllHandle = nullptr;
-    //     dllSetTitle = nullptr;
-    //     FreeLibrary(static_cast<HMODULE>(oldHandle));
-
-        
-    //     dllHandle = dlopen(dllPath.string().c_str(), RTLD_LAZY);
-    //     if (!dllHandle) return;
-    //     dllSetTitle = reinterpret_cast<SetTitleFn>(
-    //         dlsym(dllHandle, "hot_reload_set_title"));
-
-    //     dllSetTitle = reinterpret_cast<SetTitleFn>(
-    //         GetProcAddress(static_cast<HMODULE>(dllHandle), "hot_reload_set_title"));
-
-    //     if (!dllSetTitle)
-    //     {
-    //         std::cout << "DLL missing hot_reload_set_title export after reload\n";
-    //         FreeLibrary(static_cast<HMODULE>(dllHandle));
-    //         dllHandle = nullptr;
-    //         return;
-    //     }
-
-    //     dllLastWrite = now;
-    // }
-
-    // if (dllSetTitle)
-    // {
-    //     for (auto* element : mainMenuElements)
-    //     {
-    //         if (auto* text = dynamic_cast<sf::Text*>(element))
-    //         {
-    //             dllSetTitle(*text, "DLL Hot Reload Title");
-    //             break;
-    //         }
-    //     }
-    // }
-}
-
 void Game::update(float dt)
 {
-    updateDll();
     updateGUI();
     updateInput();
     updatePauseMenu();

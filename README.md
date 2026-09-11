@@ -46,15 +46,15 @@ The template starts out very basic, but might receive additional features over t
    Using CMake from the command line is straightforward as well.
    Be sure to run these commands in the root directory of the project you just created.
 
-   ```
-   cmake -B build
-   cmake --build build
-   ```
+   Properly tell CMake to generate Makefiles with Debug symbols (-g)
 
-   Building with debug symbols
    ```
    cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug
-   cmake --build build --config Debug
+   ```
+
+   ```
+   make -C build main
+   make -C clean main
    ```
 
    To use .vscode launch/tasks.json, you would need to run LCtrl + LShift + P >> `WSL: Open Folder in WSL`
