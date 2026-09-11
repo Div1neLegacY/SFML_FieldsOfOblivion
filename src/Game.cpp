@@ -161,7 +161,6 @@ void Game::update(float dt)
         playButton->setColor(sf::Color::White);
     }
 
-    player->sprite->update(dt);
     player->update(dt);
 }
 
@@ -229,12 +228,16 @@ void Game::updateInput()
         // Player Inputs
         if (sf::Keyboard::isKeyPressed(KB_MOVE_LEFT))
         {
-            player->sprite->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
+            player->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
+            // @todo HARDCODED: Fix later, move into Player class
+            player->attackAnimationSprite->setScale(sf::Vector2f(-4, 2)); // Flip horizontally to face left
             activeXMovement = -1.f;
         }
         if (sf::Keyboard::isKeyPressed(KB_MOVE_RIGHT))
         {
-            player->sprite->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
+            player->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
+            // @todo HARDCODED: Fix later, move into Player class
+            player->attackAnimationSprite->setScale(sf::Vector2f(4, 2)); // Flip horizontally to face left
             activeXMovement = 1.f;
         }
         if (sf::Keyboard::isKeyPressed(KB_MOVE_UP))
@@ -248,7 +251,7 @@ void Game::updateInput()
 
         if ((activeXMovement != 0) || (activeYMovement != 0))
         {
-            player->sprite->setState(AnimationState::ACTIVE);
+            player->setState(AnimationState::ACTIVE);
             // If we have both x and y movements, normalize the speed so we don't go faster when combining the movements
             if ((activeXMovement != 0) && (activeYMovement != 0))
             {
@@ -262,14 +265,14 @@ void Game::updateInput()
             }
             // Multiplier to adjust movement speed.
             float arbitrary_scale = 1.0f;
-            player->sprite->move(sf::Vector2f(activeXMovement * arbitrary_scale, activeYMovement * arbitrary_scale));
+            player->move(sf::Vector2f(activeXMovement * arbitrary_scale, activeYMovement * arbitrary_scale));
         }
         else
         {
-            player->sprite->setState(AnimationState::IDLE);
+            player->setState(AnimationState::IDLE);
         }
 
-        player->camera->setCenter(player->sprite->getPosition());
+        player->camera->setCenter(player->getPosition());
         //player->healthBar->update(100.f);
     }
 }
@@ -339,8 +342,8 @@ void Game::updateEnemies(float dt)
     }
 
     for (const auto& enemy : enemies) {
-        moveTowardsPlayer(dt, enemy, player->sprite);
-        bool enemyCollision = checkCollision(enemy, player->sprite);
+        moveTowardsPlayer(dt, enemy, player);
+        bool enemyCollision = checkCollision(enemy, player);
         // 2. Only damage the player if they are NOT currently invincible
         if (enemyCollision && invincibilityTimer <= 0.0f)
         {
@@ -373,7 +376,7 @@ void Game::renderPlaying()
         window->draw(element);
     }
 
-    window->draw(*player->sprite);
+    window->draw(*player);
     window->draw(*player->attackAnimationSprite);
 
     for (const auto& enemy : enemies) {

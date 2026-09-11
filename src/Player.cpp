@@ -1,14 +1,13 @@
 #include "Player.hpp"
 
-Player::Player()
+Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, get_sprite(SPRITE_PLAYER).frameCount)
 {
     // Save pointer later to do more with the sprite
-    this->sprite = new AnimatedSprite(SPRITE_PLAYER_TEXTURE, get_sprite(SPRITE_PLAYER).frameCount);
-	this->sprite->setScale(sf::Vector2f{2, 2});
+	setScale(sf::Vector2f{2, 2});
 	// Re-adjust the origin to the center of the sprite for proper positioning after scaling up
-	this->sprite->setOrigin(sprite->getLocalBounds().getCenter());
-	this->sprite->setPosition(WINDOW_CENTER);
-    this->camera = new sf::View(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
+	setOrigin(getLocalBounds().getCenter());
+	setPosition(WINDOW_CENTER);
+    camera = std::make_unique<sf::View>(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
     //this->healthBar = new HealthBar(100.f);
 
     attackAnimationSprite = std::make_unique<AnimatedSprite>(
@@ -18,19 +17,15 @@ Player::Player()
         64, 64,
         true
     );
-}
-
-Player::~Player()
-{
-    delete camera, sprite;//, healthBar;
+    attackAnimationSprite->setScale(sf::Vector2f{4, 2});
 }
 
 void Player::update(float dt)
 {
+    // Update player animation sprite
+    AnimatedSprite::update(dt);
+
+    // Update attack animation sprite
     attackAnimationSprite->update(dt);
-
-    // Get Sprite center
-    sf::Vector2f center = sprite->getPosition() - (static_cast<sf::Vector2f>(sprite->getTextureRect().size));
-
-    attackAnimationSprite->setPosition(center);
+    attackAnimationSprite->setPosition(camera->getCenter() - sf::Vector2f{30, 30});
 } 

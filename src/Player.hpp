@@ -4,15 +4,13 @@
 #include "HealthBar.hpp"
 #include "AnimatedSprite.hpp"
 
-class Player
+class Player : public AnimatedSprite
 {
 public:
-	Player();
-	virtual ~Player();
+    Player();
     void update(float dt);
-//private:
-    AnimatedSprite* sprite;
-    sf::View* camera;
+
+    std::unique_ptr<sf::View> camera;
     //HealthBar* healthBar;
     std::unique_ptr<AnimatedSprite> attackAnimationSprite;
 private:
