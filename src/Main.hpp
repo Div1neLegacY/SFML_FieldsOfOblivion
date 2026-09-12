@@ -76,3 +76,5 @@ const AnimationSpriteSettings DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS = {
     .animationCooldownDuration = ATTACK_COOLDOWN,
     .initialSpriteBlank = true
 };
+
+const AnimationSpriteSettings DEFAULT_ENEMY_ANIMATION_SETTINGS = {};

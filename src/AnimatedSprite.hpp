@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <iostream>
+#include <set>
 
 enum AnimationState
 {
@@ -33,6 +34,10 @@ private:
     float frameDuration = 0.05f;
     float cooldownTimer = 0.0f; // Timer for tracking cooldown period
 
+public:
+    // @TODO Move into Attack animation sprite class?
+    // Tracks unique IDs of enemies hit during the current attack cycle
+    std::set<int> enemiesHitThisAttack; 
 
 public:
     AnimatedSprite(const sf::Texture& texture, AnimationSpriteSettings settings);

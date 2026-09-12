@@ -5,6 +5,7 @@
 #include <filesystem>
 #include "AnimatedSprite.hpp"
 #include "Player.hpp"
+#include "Enemy.hpp"
 
 enum class GameState {
     MainMenu,
@@ -69,12 +70,11 @@ private:
 	int currentHealth = MAX_HEALTH;
 	float invincibilityTimer = 0.0f;
 
-	// Enemies
-	std::vector<sf::Sprite*> enemies;
-
 	// @todo Do later
     //std::unique_ptr<AnimatedSprite> player;
 	Player* player;
+	// Enemies
+	std::vector<std::unique_ptr<Enemy>> enemies;
 
 	std::vector<sf::Drawable*> pauseMenuElements;
 	sf::Text* pauseMenuText;

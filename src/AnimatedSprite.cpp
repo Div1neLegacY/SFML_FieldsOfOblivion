@@ -55,6 +55,8 @@ void AnimatedSprite::update(float dt)
                 {
                     currentState = AnimationState::IDLE;
                     cooldownTimer = settings.animationCooldownDuration;
+                    // Reset the set of enemies hit for the next attack cycle
+                    enemiesHitThisAttack.clear();
                 }
                 break;
             }

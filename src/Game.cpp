@@ -14,6 +14,13 @@ Game::Game()
 	window->setVerticalSyncEnabled(false);
     player = new Player();
 
+    for (int i = 0; i < 30; i++)
+    {
+        auto enemy_ptr = std::make_unique<Enemy>(i);
+        enemy_ptr->setPosition(sf::Vector2f{i * 50.0f, 0});
+        enemies.push_back(std::move(enemy_ptr));
+    }
+
     initMainMenu();
     // Just initialize the pause menu, but don't load it yet.
     initPauseMenu();
@@ -123,14 +130,6 @@ void Game::initWorld()
     healthBar->setOutlineColor(sf::Color::White);
     this->healthBar = healthBar;
     playingUIElements.push_back(healthBar);
-
-    // Generate starting enemies
-    sf::Sprite* enemy = new sf::Sprite(SPRITE_ENEMY_TEXTURE);
-    enemy->setPosition(sf::Vector2f{0, 0});
-    enemy->setScale(sf::Vector2f{2, 2});
-	// Re-adjust the origin to the center of the sprite for proper positioning after scaling up
-	enemy->setOrigin(enemy->getLocalBounds().getCenter());
-    this->enemies.push_back(enemy);
 }
 
 void Game::update(float dt)
@@ -232,6 +231,7 @@ void Game::updateInput()
             // @todo HARDCODED: Fix later, move into Player class
             if (player->attackAnimationSprite && !player->attackAnimationSprite->isActive())
             {
+                // @todo Needs to match player direction, but currently doesn't. Need to fix this later.
                 player->attackAnimationSprite->setScale(sf::Vector2f(-4, 2)); // Flip horizontally to face left
             }
             activeXMovement = -1.f;
@@ -242,6 +242,7 @@ void Game::updateInput()
             // @todo HARDCODED: Fix later, move into Player class
             if (player->attackAnimationSprite && !player->attackAnimationSprite->isActive())
             {
+                // @todo Needs to match player direction, but currently doesn't. Need to fix this later.
                 player->attackAnimationSprite->setScale(sf::Vector2f(4, 2)); // Flip horizontally to face left
             }
             activeXMovement = 1.f;
@@ -347,11 +348,14 @@ void Game::updateEnemies(float dt)
         invincibilityTimer -= dt;
     }
 
-    for (const auto& enemy : enemies) {
-        moveTowardsPlayer(dt, enemy, player);
-        bool enemyCollision = checkCollision(enemy, player);
-        // 2. Only damage the player if they are NOT currently invincible
-        if (enemyCollision && invincibilityTimer <= 0.0f)
+    size_t i = 0;
+    while (i < enemies.size()) {
+        // Move the enemy towards the player
+        moveTowardsPlayer(dt, enemies[i].get(), player);
+
+        // Check if enemy is overlapping player
+        // Only damage the player if they are NOT currently invincible
+        if (checkCollision(enemies[i].get(), player) && invincibilityTimer <= 0.0f)
         {
             int arbitraryNum = 10;
             currentHealth -= arbitraryNum;
@@ -359,15 +363,36 @@ void Game::updateEnemies(float dt)
             size.x -= (HEALTH_BAR_WIDTH / arbitraryNum);
             size.x = std::max(size.x, 0.0f);
             healthBar->setSize(size);
-            
-            // 3. Reset the timer to trigger the cooldown period
+
+            // Reset the timer to trigger the cooldown period
             invincibilityTimer = INVINCIBILITY_DURATION; 
-            
+
             // Optional: Break out early so multiple overlapping enemies 
             // don't stack damage on the exact same frame
-            break; 
+            break;
         }
+
+        // Check if enemy was already hit during the current attack cycle
+        if (player->attackAnimationSprite &&
+            player->attackAnimationSprite->enemiesHitThisAttack.find(enemies[i].get()->getId()) == player->attackAnimationSprite->enemiesHitThisAttack.end())
+        {
+            // Check if enemy is overlapping player's attack
+            if (checkCollision(enemies[i].get(), player->attackAnimationSprite.get()))
+            {
+                enemies[i].get()->damage(10); // Arbitrary damage value for now
+                player->attackAnimationSprite->enemiesHitThisAttack.insert(enemies[i].get()->getId());
+                if (enemies[i].get()->isDead())
+                {
+                    enemies.erase(enemies.begin() + i);
+                    continue;
+                }
+            }
+        }
+
+        i++;
     }
+
+
 }
 
 void Game::updateWorld(float dt)
@@ -394,8 +419,7 @@ void Game::render()
 {
     window->clear(sf::Color(30, 30, 30)); // Dark background
 
-
-	switch (currentState) {
+    switch (currentState) {
         case GameState::MainMenu:
             for (const auto& element : mainMenuElements) {
                 window->draw(*element);

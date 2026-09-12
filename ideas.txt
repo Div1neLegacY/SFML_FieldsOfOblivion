@@ -1,2 +1,5 @@
 Warframe but in the style of Vampire Survivors. Elemental combinations with special effects.
 Bosses with bullet hell
+
+Spawning in enemies using functions:
+    (x - h)^2 + (y - k)^2 = r^2 # Spawns enemies in a circle
