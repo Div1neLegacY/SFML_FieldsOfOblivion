@@ -230,14 +230,20 @@ void Game::updateInput()
         {
             player->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
             // @todo HARDCODED: Fix later, move into Player class
-            player->attackAnimationSprite->setScale(sf::Vector2f(-4, 2)); // Flip horizontally to face left
+            if (player->attackAnimationSprite && !player->attackAnimationSprite->isActive())
+            {
+                player->attackAnimationSprite->setScale(sf::Vector2f(-4, 2)); // Flip horizontally to face left
+            }
             activeXMovement = -1.f;
         }
         if (sf::Keyboard::isKeyPressed(KB_MOVE_RIGHT))
         {
             player->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
             // @todo HARDCODED: Fix later, move into Player class
-            player->attackAnimationSprite->setScale(sf::Vector2f(4, 2)); // Flip horizontally to face left
+            if (player->attackAnimationSprite && !player->attackAnimationSprite->isActive())
+            {
+                player->attackAnimationSprite->setScale(sf::Vector2f(4, 2)); // Flip horizontally to face left
+            }
             activeXMovement = 1.f;
         }
         if (sf::Keyboard::isKeyPressed(KB_MOVE_UP))

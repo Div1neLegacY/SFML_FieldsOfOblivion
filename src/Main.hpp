@@ -3,6 +3,8 @@
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics.hpp>
 #include "Assets.hpp"
+#include "AnimatedSprite.hpp"
+
 const sf::String GAME_TITLE = "Fields of Oblivion";
 const std::filesystem::path GAME_TITLE_FONT_PATH = "assets/fonts/Star Crush.ttf";
 const sf::Font GAME_TITLE_FONT = sf::Font(GAME_TITLE_FONT_PATH);
@@ -56,3 +58,21 @@ const auto KB_MOVE_UP = sf::Keyboard::Key::W;
 const auto KB_MOVE_DOWN = sf::Keyboard::Key::S;
 const auto KB_MOVE_LEFT = sf::Keyboard::Key::A;
 const auto KB_MOVE_RIGHT = sf::Keyboard::Key::D;
+
+
+/**
+ * Animation Sprites Settings
+ */
+// Player
+const AnimationSpriteSettings DEFAULT_PLAYER_ANIMATION_SETTINGS = {
+    .totalFrames = get_sprite(SPRITE_PLAYER).frameCount,
+    .frameRect = sf::IntRect({0, 0}, {17, 20}),
+};
+
+// Player Attack
+const AnimationSpriteSettings DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS = {
+    .totalFrames = get_sprite(SPRITE_PLAYER_ATTACK).frameCount,
+    .frameRect = sf::IntRect({0, 0}, {64, 64}),
+    .animationCooldownDuration = ATTACK_COOLDOWN,
+    .initialSpriteBlank = true
+};

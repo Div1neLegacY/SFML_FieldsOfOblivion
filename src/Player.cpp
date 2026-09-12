@@ -1,6 +1,6 @@
 #include "Player.hpp"
 
-Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, get_sprite(SPRITE_PLAYER).frameCount)
+Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATION_SETTINGS)
 {
     // Save pointer later to do more with the sprite
 	setScale(sf::Vector2f{2, 2});
@@ -12,11 +12,7 @@ Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, get_sprite(SPRITE_PLAYE
 
     attackAnimationSprite = std::make_unique<AnimatedSprite>(
         SPRITE_PLAYER_ATTACK_TEXTURE,
-        get_sprite(SPRITE_PLAYER_ATTACK).frameCount,
-        ATTACK_COOLDOWN,
-        64, 64,
-        true
-    );
+        DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS);
     attackAnimationSprite->setScale(sf::Vector2f{4, 2});
 }
 
