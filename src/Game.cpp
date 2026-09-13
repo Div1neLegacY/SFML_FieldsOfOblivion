@@ -28,7 +28,7 @@ Game::Game()
 
 Game::~Game()
 {
-    delete window, player;
+    delete window, player, expBar, healthBar;
 }
 
 void Game::run()
@@ -47,7 +47,7 @@ void Game::run()
 void Game::initMainMenu()
 {
     std::cout << "Initializing Main Menu..." << std::endl;
-    sf::Text* title = new sf::Text(GAME_TITLE_FONT, GAME_TITLE, 50);
+    sf::Text* title = new sf::Text(GAME_FONT, GAME_TITLE, 50);
     title->setFillColor(sf::Color::White);
     // @todo Is this really necessary? It seems to be a workaround for a bug in SFML 2.5.1 where the text's origin is not set correctly when using a custom font.
 	// Center the title's origin to allow easy horizontal alignment
@@ -71,7 +71,7 @@ void Game::initMainMenu()
 
 void Game::initPauseMenu()
 {
-    sf::Text* pauseMenuText = new sf::Text(GAME_TITLE_FONT, sf::String("PAUSE MENU PLACEHOLDER"), 50);
+    sf::Text* pauseMenuText = new sf::Text(GAME_FONT, sf::String("PAUSE MENU PLACEHOLDER"), 50);
     pauseMenuText->setFillColor(sf::Color::White);
     // @todo Is this really necessary? It seems to be a workaround for a bug in SFML 2.5.1 where the text's origin is not set correctly when using a custom font.
 	// Center the title's origin to allow easy horizontal alignment
@@ -130,6 +130,8 @@ void Game::initWorld()
     healthBar->setOutlineColor(sf::Color::White);
     this->healthBar = healthBar;
     playingUIElements.push_back(healthBar);
+
+    this->expBar = new ExpBar(300.f, 20.f);
 }
 
 void Game::update(float dt)
@@ -161,6 +163,18 @@ void Game::update(float dt)
     }
 
     player->update(dt);
+
+    //@TODO: Move this into a better method rather than checking for each orb
+    for (size_t i = 0; i < expOrbs.size(); ++i)
+    {
+        if (checkCollision(player, expOrbs[i].get()))
+        {
+            // Player has collected the orb
+            expOrbs.erase(expOrbs.begin() + i);
+            player->addExp(1);
+            expBar->update(player->currentExp, player->currentLevelBracket->second, player->currentPlayerLevel);
+        }
+    }
 }
 
 /**
@@ -350,6 +364,8 @@ void Game::updateEnemies(float dt)
 
     size_t i = 0;
     while (i < enemies.size()) {
+        enemies[i]->update(dt);
+
         // Move the enemy towards the player
         moveTowardsPlayer(dt, enemies[i].get(), player);
 
@@ -383,6 +399,9 @@ void Game::updateEnemies(float dt)
                 player->attackAnimationSprite->enemiesHitThisAttack.insert(enemies[i].get()->getId());
                 if (enemies[i].get()->isDead())
                 {
+                    auto newExpOrb = std::make_unique<sf::Sprite>(SPRITE_EXP_ORB_SMALL_TEXTURE);
+                    newExpOrb->setPosition(enemies[i]->getPosition());
+                    expOrbs.push_back(std::move(newExpOrb));
                     enemies.erase(enemies.begin() + i);
                     continue;
                 }
@@ -410,8 +429,29 @@ void Game::renderPlaying()
     window->draw(*player);
     window->draw(*player->attackAnimationSprite);
 
-    for (const auto& enemy : enemies) {
-        window->draw(*enemy);
+    renderEnemies();
+
+    for (const auto& orb : expOrbs)
+    {
+        window->draw(*orb);
+    }
+}
+
+void Game::renderEnemies()
+{
+    for (const auto& enemy : enemies)
+    {
+        // If enemy is in a damaged state, draw it with additive blending to force pixels to white
+        if (enemy->isDamaged())
+        {
+            // Draw with additive blending to force pixels to white
+            window->draw(*enemy, sf::BlendAdd);
+            window->draw(*enemy, sf::BlendAdd);
+        }
+        else
+        {
+            window->draw(*enemy); // Draw normally
+        }
     }
 }
 
@@ -435,6 +475,8 @@ void Game::render()
             for (const auto& element : playingUIElements) {
                 window->draw(*element);
             }
+
+            expBar->draw(*window);
 
             // Apply your custom camera view before drawing world objects
             window->setView(*player->camera);

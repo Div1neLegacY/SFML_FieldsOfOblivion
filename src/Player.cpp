@@ -1,6 +1,7 @@
 #include "Player.hpp"
+#include "Utilities.hpp"
 
-Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATION_SETTINGS)
+Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATION_SETTINGS), currentLevelBracket(LEVEL_BRACKETS.begin())
 {
     // Save pointer later to do more with the sprite
 	setScale(sf::Vector2f{2, 2});
@@ -24,4 +25,30 @@ void Player::update(float dt)
     // Update attack animation sprite
     attackAnimationSprite->update(dt);
     attackAnimationSprite->setPosition(camera->getCenter() - sf::Vector2f{30, 30});
-} 
+}
+
+void Player::addExp(int amount)
+{
+    currentExp += amount;
+
+    printf("currentExp: %d\n", currentExp);
+    fflush(stdout);
+
+    // Level-up player if they have enough experience
+    if (currentExp == currentLevelBracket->second)
+    {
+        currentExp = 0;
+        currentPlayerLevel++;
+        printf("currentPlayerLevel: %d\n", currentPlayerLevel);
+        fflush(stdout);
+
+        // If bracket iterator is not at end of defined bracket list and
+        // current level reaches next bracket, then advance to next
+        if (currentLevelBracket != LEVEL_BRACKETS.end() && currentPlayerLevel == std::next(currentLevelBracket)->first)
+        {
+            currentLevelBracket++; // Forward iterators only move forward
+            printf("currentLevelBracket->first: %d\n", currentLevelBracket->first);
+            fflush(stdout);
+        }
+    }
+}

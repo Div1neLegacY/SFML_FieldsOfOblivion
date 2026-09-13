@@ -6,6 +6,7 @@
 #include "AnimatedSprite.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
+#include "ExpBar.hpp"
 
 enum class GameState {
     MainMenu,
@@ -38,6 +39,7 @@ public:
 	//void renderWorld();
 	void render();
 	void renderPlaying();
+	void renderEnemies();
 
     bool isOpen() const
     {
@@ -67,6 +69,7 @@ private:
 
 	// Health Bar
 	sf::RectangleShape* healthBar;
+	ExpBar* expBar;
 	int currentHealth = MAX_HEALTH;
 	float invincibilityTimer = 0.0f;
 
@@ -75,6 +78,7 @@ private:
 	Player* player;
 	// Enemies
 	std::vector<std::unique_ptr<Enemy>> enemies;
+	std::vector<std::unique_ptr<sf::Sprite>> expOrbs;
 
 	std::vector<sf::Drawable*> pauseMenuElements;
 	sf::Text* pauseMenuText;

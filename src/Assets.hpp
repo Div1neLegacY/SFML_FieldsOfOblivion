@@ -31,6 +31,8 @@ enum SpriteID
 	SPRITE_TILE_GRASS_01,
 	// Projectiles
 	SPRITE_BASIC_PROJECTILE,
+	// Exp Orbs
+	SPRITE_EXP_ORB_SMALL,
 	// Count of sprite assets
 	SPRITE_COUNT
 };
@@ -64,6 +66,14 @@ inline Sprite get_sprite(SpriteID spriteID)
 		{
 			sprite.rectangle.position = {16, 0};
 			sprite.rectangle.size = {16, 16};
+			break;
+		}
+
+		case SPRITE_EXP_ORB_SMALL:
+		{
+			sprite.rectangle.position = {0, 48};
+			sprite.rectangle.size = {16, 16};
+			sprite.file = SPRITE_ATLAS_MASTER;
 			break;
 		}
 

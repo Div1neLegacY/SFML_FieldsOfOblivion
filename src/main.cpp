@@ -10,7 +10,7 @@ int main()
 	float dt; // Define dt here at the top level
 
 	// Test text
-	sf::Text text = sf::Text(GAME_TITLE_FONT);
+	sf::Text text = sf::Text(GAME_FONT);
 	text.setCharacterSize(30);
 	text.setPosition(sf::Vector2f(100.f, 250.f));
 	text.setString("Initial default num: 0");

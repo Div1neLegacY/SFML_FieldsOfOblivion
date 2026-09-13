@@ -22,11 +22,8 @@ static void moveTowardsPlayer(float dt, sf::Sprite* spriteToMove, sf::Sprite* ta
         // Normalize the vector (make its total length equal to 1)
         sf::Vector2f normalizedDirection = direction / distance;
 
-        // 5. Define movement speed (pixels per second)
-        float speed = 20.0f; 
-
         // 6. Move the sprite along the normalized path scaled by speed and dt
-        spriteToMove->move(normalizedDirection * speed * dt);
+        spriteToMove->move(normalizedDirection * DEFAULT_ENEMY_SPEED * dt);
     }
 }
 

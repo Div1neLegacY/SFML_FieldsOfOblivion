@@ -3,3 +3,7 @@ Bosses with bullet hell
 
 Spawning in enemies using functions:
     (x - h)^2 + (y - k)^2 = r^2 # Spawns enemies in a circle
+
+Each level has a capped ending bosses @ 15 mins, 30, etc.
+    You can't go past 15 minutes the first time, but with future upgrades (maybe certain elements / weapons / armor), you can then beat
+    the 15 minute boss and get to 30 mins.

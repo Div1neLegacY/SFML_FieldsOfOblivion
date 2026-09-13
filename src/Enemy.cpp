@@ -1,5 +1,7 @@
 #include "Enemy.hpp"
 
+
+
 Enemy::Enemy(int enemyID, EnemySettings settings)
     : AnimatedSprite(SPRITE_ENEMY_TEXTURE, DEFAULT_ENEMY_ANIMATION_SETTINGS), enemyID(enemyID), settings(settings)
 {
@@ -14,12 +16,24 @@ void Enemy::update(float dt)
     // @TODO
     // Update enemy animation sprite
     //AnimatedSprite::update(dt);
+    // Check if enemy should still be in "Damaged" state
+    if (damageTimer > 0.0f)
+    {
+        damageTimer -= dt;
+        if (damageTimer <= 0.0f)
+        {
+            damageTimer = 0.0f;
+            enemyState = EnemyState::NORMAL;
+        }
+    }
+
 }
 
 void Enemy::damage(int amount)
 {
     health -= amount;
-    // @TODO: Flash enemy sprite to indicate damage taken
+    enemyState = EnemyState::DAMAGED;
+    damageTimer = settings.damageDuration;
 }
 
 bool Enemy::isDead()
