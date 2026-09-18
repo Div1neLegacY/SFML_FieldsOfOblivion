@@ -35,6 +35,13 @@ const unsigned int WINDOW_HEIGHT = 720;
 const sf::Vector2f WINDOW_CENTER_TOP = sf::Vector2f{WINDOW_WIDTH / 2, 0};
 const sf::Vector2f WINDOW_CENTER     = sf::Vector2f{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
 
+/**
+ * GUI Element Constants
+ */
+const unsigned int UPGRADE_MENU_BUTTON_HEIGHT = 50;
+const unsigned int UPGRADE_MENU_BUTTON_WIDTH = 200;
+const unsigned int UPGRADE_MENU_PADDING_AROUND_BUTTONS = 30;
+const unsigned int UPGRADE_MENU_SPACING_BETWEEN_BUTTONS = 20;
 
 constexpr int TILE_SIZE = 95;
 const sf::Vector2f BACKGROUND_TILE_SCALE{2, 2};

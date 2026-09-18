@@ -16,7 +16,7 @@ Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATIO
         DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS);
     attackAnimationSprite->setScale(sf::Vector2f{4, 2});
 
-    upgradeMenu = std::make_unique<UpgradeMenu>(300.f, 20.f);
+    upgradeMenu = std::make_unique<UpgradeMenu>();
     upgradeMenu->setVisible(false);
 }
 
