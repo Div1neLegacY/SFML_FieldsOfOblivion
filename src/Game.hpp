@@ -11,7 +11,8 @@
 enum class GameState {
     MainMenu,
     Playing,
-    Paused
+    Paused,
+	PausedForUpgrade
 };
 
 class Game

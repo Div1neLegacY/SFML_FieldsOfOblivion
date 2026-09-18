@@ -15,6 +15,9 @@ Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATIO
         SPRITE_PLAYER_ATTACK_TEXTURE,
         DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS);
     attackAnimationSprite->setScale(sf::Vector2f{4, 2});
+
+    upgradeMenu = std::make_unique<UpgradeMenu>(300.f, 20.f);
+    upgradeMenu->setVisible(false);
 }
 
 void Player::update(float dt)
@@ -37,10 +40,13 @@ void Player::addExp(int amount)
     // Level-up player if they have enough experience
     if (currentExp == currentLevelBracket->second)
     {
+        upgradeMenu->setVisible(true);
         currentExp = 0;
         currentPlayerLevel++;
         printf("currentPlayerLevel: %d\n", currentPlayerLevel);
         fflush(stdout);
+
+        // @TODO wait on upgradeMenu for input
 
         // If bracket iterator is not at end of defined bracket list and
         // current level reaches next bracket, then advance to next

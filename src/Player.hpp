@@ -3,6 +3,7 @@
 #include "Main.hpp"
 #include "HealthBar.hpp"
 #include "AnimatedSprite.hpp"
+#include "UpgradeMenu.hpp"
 
 class Player : public AnimatedSprite
 {
@@ -13,6 +14,7 @@ public:
 
     std::unique_ptr<sf::View> camera;
     //HealthBar* healthBar;
+    std::unique_ptr<UpgradeMenu> upgradeMenu;
     int currentPlayerLevel = 0;
     std::forward_list<std::pair<unsigned int, unsigned int>>::const_iterator currentLevelBracket;
     int currentExp = 0;

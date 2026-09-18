@@ -140,6 +140,7 @@ void Game::update(float dt)
     updateInput();
     updatePauseMenu();
     updatePollEvents();
+
     if (currentState == GameState::Playing)
     {
         updateWorld(dt);
@@ -149,7 +150,15 @@ void Game::update(float dt)
     // Get the current local mouse position relative to the active window
     sf::Vector2i mousePos = sf::Mouse::getPosition(*window);
     // Convert window pixel coordinates to world/view coordinates
-    sf::Vector2f mousePosF = window->mapPixelToCoords(mousePos);
+    sf::Vector2f mousePosF = currentState == GameState::PausedForUpgrade
+        ? window->mapPixelToCoords(mousePos, window->getDefaultView())
+        : window->mapPixelToCoords(mousePos);
+
+    if (currentState == GameState::PausedForUpgrade)
+    {
+        player->upgradeMenu->updateMouse(mousePosF);
+        return;
+    }
 
     // Check if mouse is bounds of the button shape
     if (playButton->getGlobalBounds().contains(mousePosF))
@@ -173,7 +182,13 @@ void Game::update(float dt)
             expOrbs.erase(expOrbs.begin() + i);
             player->addExp(1);
             expBar->update(player->currentExp, player->currentLevelBracket->second, player->currentPlayerLevel);
+            player->upgradeMenu->updateMouse(mousePosF);
         }
+    }
+
+    if (player->upgradeMenu->isVisible())
+    {
+        currentState = GameState::PausedForUpgrade;
     }
 }
 
@@ -211,7 +226,7 @@ void Game::updatePollEvents()
 
 void Game::updateGUI()
 {
-    if (currentState == GameState::MainMenu)
+    if (currentState == GameState::MainMenu || currentState == GameState::PausedForUpgrade)
     {
         if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
         {
@@ -227,6 +242,12 @@ void Game::updateGUI()
                 currentState = GameState::Playing;
                 // @todo Don't want to reinitialize the world every time we click the button. Only do this once when transitioning to Playing state.
                 initWorld(); // Initialize the world when transitioning to Playing state
+            }
+
+            if (player->upgradeMenu->handleMouseClick(mousePosF) != -1)
+            {
+                player->upgradeMenu->setVisible(false);
+                currentState = GameState::Playing;
             }
         }
     }
@@ -490,6 +511,19 @@ void Game::render()
             for (const auto& element : pauseMenuElements) {
                 window->draw(*element);
             }
+            break;
+
+        case GameState::PausedForUpgrade:
+            // Continue to render anything in the Playing state (world, player, etc.)
+            renderPlaying();
+
+            // Switch to default view for static UI elements
+            window->setView(window->getDefaultView());
+
+            window->draw(*player->upgradeMenu);
+
+            // Apply your custom camera view before drawing world objects
+            window->setView(*player->camera);
             break;
     }
 
