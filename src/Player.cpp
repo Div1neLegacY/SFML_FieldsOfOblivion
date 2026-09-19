@@ -50,8 +50,6 @@ void Player::addExp(int amount)
         printf("currentPlayerLevel: %d\n", currentPlayerLevel);
         fflush(stdout);
 
-        // @TODO wait on upgradeMenu for input
-
         // If bracket iterator is not at end of defined bracket list and
         // current level reaches next bracket, then advance to next
         if (currentLevelBracket != LEVEL_BRACKETS.end() && currentPlayerLevel == std::next(currentLevelBracket)->first)
@@ -65,17 +63,18 @@ void Player::addExp(int amount)
 
 void Player::playerMoveLeft()
 {
-    sf::Vector2f flippedScale{ DEFAULT_PLAYER_SCALE.x * -1.0f, DEFAULT_PLAYER_SCALE.y};
-    setScale(flippedScale);
+    sf::Vector2f flippedWeaponScale{ DEFAULT_WEAPON_SCALE.x * -1.0f, DEFAULT_WEAPON_SCALE.y};
+    sf::Vector2f flippedPlayerScale{ DEFAULT_PLAYER_SCALE.x * -1.0f, DEFAULT_PLAYER_SCALE.y};
+    setScale(flippedPlayerScale);
 
     // Update all weapon directions
     for (const auto& weapon : playerWeapons)
     {
-        // @todo Should change to check if player is currently attacking
+        // @todo Probably should change to check if player is currently attacking
         // If weapon is currently not active then allow scaling / rotation changes
         if (!weapon->isActive())
         {
-            weapon->setScale(flippedScale);
+            weapon->setScale(flippedWeaponScale);
         }
     }
 }
@@ -87,7 +86,7 @@ void Player::playerMoveRight()
     // Update all weapon directions
     for (const auto& weapon : playerWeapons)
     {
-        // @todo Should change to check if player is currently attacking
+        // @todo Probably should change to check if player is currently attacking
         // If weapon is currently not active then allow scaling / rotation changes
         if (!weapon->isActive())
         {
