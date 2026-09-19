@@ -262,24 +262,12 @@ void Game::updateInput()
         // Player Inputs
         if (sf::Keyboard::isKeyPressed(KB_MOVE_LEFT))
         {
-            player->setScale(sf::Vector2f(-2, 2)); // Flip horizontally to face left
-            // @todo HARDCODED: Fix later, move into Player class
-            if (player->attackAnimationSprite && !player->attackAnimationSprite->isActive())
-            {
-                // @todo Needs to match player direction, but currently doesn't. Need to fix this later.
-                player->attackAnimationSprite->setScale(sf::Vector2f(-4, 2)); // Flip horizontally to face left
-            }
+            player->playerMoveLeft();
             activeXMovement = -1.f;
         }
         if (sf::Keyboard::isKeyPressed(KB_MOVE_RIGHT))
         {
-            player->setScale(sf::Vector2f(2, 2)); // Reset to original right-facing position
-            // @todo HARDCODED: Fix later, move into Player class
-            if (player->attackAnimationSprite && !player->attackAnimationSprite->isActive())
-            {
-                // @todo Needs to match player direction, but currently doesn't. Need to fix this later.
-                player->attackAnimationSprite->setScale(sf::Vector2f(4, 2)); // Flip horizontally to face left
-            }
+            player->playerMoveRight();
             activeXMovement = 1.f;
         }
         if (sf::Keyboard::isKeyPressed(KB_MOVE_UP))
@@ -409,27 +397,30 @@ void Game::updateEnemies(float dt)
             break;
         }
 
-        // Check if enemy was already hit during the current attack cycle
-        if (player->attackAnimationSprite &&
-            player->attackAnimationSprite->enemiesHitThisAttack.find(enemies[i].get()->getId()) == player->attackAnimationSprite->enemiesHitThisAttack.end())
+        // Check all weapons for hit on enemy
+        for (const auto& weapon : player->playerWeapons)
         {
-            // Check if enemy is overlapping player's attack
-            if (checkCollision(enemies[i].get(), player->attackAnimationSprite.get()))
+            // Check if enemy was already hit during the current attack cycle
+            if (weapon->enemiesHitThisAttack.find(enemies[i].get()->getId()) == weapon->enemiesHitThisAttack.end())
             {
-                enemies[i].get()->damage(10); // Arbitrary damage value for now
-                player->attackAnimationSprite->enemiesHitThisAttack.insert(enemies[i].get()->getId());
-                if (enemies[i].get()->isDead())
+                // Check if enemy is overlapping player's attack
+                if (checkCollision(enemies[i].get(), weapon.get()))
                 {
-                    auto newExpOrb = std::make_unique<sf::Sprite>(SPRITE_EXP_ORB_SMALL_TEXTURE);
-                    newExpOrb->setPosition(enemies[i]->getPosition());
-                    expOrbs.push_back(std::move(newExpOrb));
-                    enemies.erase(enemies.begin() + i);
-                    continue;
+                    enemies[i].get()->damage(10); // Arbitrary damage value for now
+                    weapon->enemiesHitThisAttack.insert(enemies[i].get()->getId());
+                    if (enemies[i].get()->isDead())
+                    {
+                        auto newExpOrb = std::make_unique<sf::Sprite>(SPRITE_EXP_ORB_SMALL_TEXTURE);
+                        newExpOrb->setPosition(enemies[i]->getPosition());
+                        expOrbs.push_back(std::move(newExpOrb));
+                        enemies.erase(enemies.begin() + i);
+                        continue;
+                    }
                 }
             }
-        }
 
-        i++;
+            i++;
+        }
     }
 
 
@@ -448,7 +439,11 @@ void Game::renderPlaying()
     }
 
     window->draw(*player);
-    window->draw(*player->attackAnimationSprite);
+
+    for (const auto& weapon : player->playerWeapons)
+    {
+        window->draw(*weapon);
+    }
 
     renderEnemies();
 

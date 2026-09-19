@@ -37,6 +37,7 @@ add_executable(main
     src/Player.cpp
     src/AnimatedSprite.cpp
     src/Enemy.cpp
+    src/Weapon.cpp
 )
 target_compile_features(main PRIVATE cxx_std_17)
 target_link_libraries(main PRIVATE SFML::Graphics)

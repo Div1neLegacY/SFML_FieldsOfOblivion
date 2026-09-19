@@ -56,6 +56,7 @@ const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PAD
 /**
  * Player Constants
  */
+const auto DEFAULT_PLAYER_SCALE = sf::Vector2f{2, 2};
 const unsigned int MAX_HEALTH = 100;
 const unsigned int HIT_DAMAGE = 10;
 const float INVINCIBILITY_DURATION = 0.2f; // Invincibility duration in seconds after taking damage
@@ -88,6 +89,10 @@ const auto KB_MOVE_DOWN = sf::Keyboard::Key::S;
 const auto KB_MOVE_LEFT = sf::Keyboard::Key::A;
 const auto KB_MOVE_RIGHT = sf::Keyboard::Key::D;
 
+/**
+ * Weapon Constants
+ */
+const auto DEFAULT_WEAPON_SCALE = sf::Vector2f{4, 2};
 
 /**
  * Animation Sprites Settings

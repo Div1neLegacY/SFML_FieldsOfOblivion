@@ -11,10 +11,11 @@ Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATIO
     camera = std::make_unique<sf::View>(sf::FloatRect({0.f, 0.f}, {WINDOW_WIDTH, WINDOW_HEIGHT}));
     //this->healthBar = new HealthBar(100.f);
 
-    attackAnimationSprite = std::make_unique<AnimatedSprite>(
+    // Create a new weapon. Replaces AnimatedSprite ^^^
+    playerWeapons.emplace_back(std::make_unique<Weapon>(
         SPRITE_PLAYER_ATTACK_TEXTURE,
-        DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS);
-    attackAnimationSprite->setScale(sf::Vector2f{4, 2});
+        DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS
+    ));
 
     upgradeMenu = std::make_unique<UpgradeMenu>();
     upgradeMenu->setVisible(false);
@@ -25,9 +26,12 @@ void Player::update(float dt)
     // Update player animation sprite
     AnimatedSprite::update(dt);
 
-    // Update attack animation sprite
-    attackAnimationSprite->update(dt);
-    attackAnimationSprite->setPosition(camera->getCenter() - sf::Vector2f{30, 30});
+    // Update all weapon animations
+    for (const auto& weapon : playerWeapons)
+    {
+        weapon->setPosition(camera->getCenter() - sf::Vector2f{30, 30});
+        weapon->update(dt);
+    }
 }
 
 void Player::addExp(int amount)
@@ -55,6 +59,39 @@ void Player::addExp(int amount)
             currentLevelBracket++; // Forward iterators only move forward
             printf("currentLevelBracket->first: %d\n", currentLevelBracket->first);
             fflush(stdout);
+        }
+    }
+}
+
+void Player::playerMoveLeft()
+{
+    sf::Vector2f flippedScale{ DEFAULT_PLAYER_SCALE.x * -1.0f, DEFAULT_PLAYER_SCALE.y};
+    setScale(flippedScale);
+
+    // Update all weapon directions
+    for (const auto& weapon : playerWeapons)
+    {
+        // @todo Should change to check if player is currently attacking
+        // If weapon is currently not active then allow scaling / rotation changes
+        if (!weapon->isActive())
+        {
+            weapon->setScale(flippedScale);
+        }
+    }
+}
+
+void Player::playerMoveRight()
+{
+    setScale(DEFAULT_PLAYER_SCALE);
+
+    // Update all weapon directions
+    for (const auto& weapon : playerWeapons)
+    {
+        // @todo Should change to check if player is currently attacking
+        // If weapon is currently not active then allow scaling / rotation changes
+        if (!weapon->isActive())
+        {
+            weapon->setScale(DEFAULT_WEAPON_SCALE);
         }
     }
 }

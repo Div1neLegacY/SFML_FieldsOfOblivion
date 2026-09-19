@@ -52,5 +52,5 @@ public:
         return currentState == AnimationState::ACTIVE;
     }
 
-    void update(float dt);
+    virtual void update(float dt);
 };

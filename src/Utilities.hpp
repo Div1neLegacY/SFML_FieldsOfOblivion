@@ -34,3 +34,15 @@ static bool checkCollision(sf::Sprite* sprite1, sf::Sprite* sprite2)
     std::optional<sf::FloatRect> result = sprite1Bounds.findIntersection(sprite2Bounds);
     return result.has_value();
 }
+
+/**
+ * Damage calculation function
+ * Final value = (base + flat) * (1 + percentage) * multiplier
+ */
+static float calculateDamage(int base, float flat, float percentage, float multiplier)
+{
+    float totalBase = static_cast<float>(base + flat);
+    float totalBaseWithPercentage = totalBase * (1 + percentage);
+    float totalBaseWithMultiplier = totalBaseWithPercentage * multiplier;
+    return totalBaseWithMultiplier;
+}
