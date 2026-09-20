@@ -9,9 +9,22 @@
 class Player : public AnimatedSprite
 {
 public:
+    /**
+     * Constructor
+     */
     Player();
+
     void update(float dt);
+
+    /**
+     * Adds exp to current player level progression
+     */
     void addExp(int amount);
+
+    /**
+     * Applies upgrade modifies to player
+     */
+    void applyUpgrade(Upgrade upgrade);
 
     /**
      * Logic for moving player left
@@ -23,6 +36,8 @@ public:
      */
     void playerMoveRight();
 
+    inline float getPlayerDamage() { return currentWeaponDamage; };
+
     std::unique_ptr<sf::View> camera;
     //HealthBar* healthBar;
     std::unique_ptr<UpgradeMenu> upgradeMenu;
@@ -32,8 +47,13 @@ public:
 
     // Player weapons
     std::vector<std::unique_ptr<Weapon>> playerWeapons;
-private:
-    // Timer to track the cooldown period between attacks
-    float attackTimer = 0.0f;
 
+private:
+    /**
+     * Member Variables
+     */
+    float attackTimer = 0.0f; // Timer to track the cooldown period between attacks
+    float currentWeaponDamage = DEFAULT_WEAPON_DAMAGE;      // Keeps track of player's damage
+    float currentWeaponCooldown = DEFAULT_ATTACK_COOLDOWN;  // Keeps track of player's cooldown
+    sf::Vector2f currentWeaponScale = DEFAULT_WEAPON_SCALE; // Keeps track of player's range
 };

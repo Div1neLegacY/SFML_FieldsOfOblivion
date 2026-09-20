@@ -17,8 +17,6 @@ struct AnimationSpriteSettings
     int totalFrames;
     // Rectangle defining the frame size of the sprite
     sf::IntRect frameRect;
-    // (Optional) cooldown period after completing a full animation cycle
-    float animationCooldownDuration = 0.0f;
     // (Optional) Initialize frames with a blank sprite.
     // Useful for attack animations where the player is not attacking and we don't want to show the attack sprite.
     bool initialSpriteBlank = false;
@@ -37,7 +35,7 @@ private:
 public:
     // @TODO Move into Attack animation sprite class?
     // Tracks unique IDs of enemies hit during the current attack cycle
-    std::set<int> enemiesHitThisAttack; 
+    std::set<int> enemiesHitThisAttack;
 
 public:
     AnimatedSprite(const sf::Texture& texture, AnimationSpriteSettings settings);
@@ -52,5 +50,5 @@ public:
         return currentState == AnimationState::ACTIVE;
     }
 
-    virtual void update(float dt);
+    virtual void update(float dt, float animationCooldownDuration = 0.f);
 };

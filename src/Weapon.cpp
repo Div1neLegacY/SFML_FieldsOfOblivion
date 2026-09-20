@@ -5,7 +5,7 @@ Weapon::Weapon(const sf::Texture& texture, AnimationSpriteSettings settings)
 {
 }
 
-void Weapon::update(float dt)
+void Weapon::update(float dt, float weaponCooldown)
 {
-    AnimatedSprite::update(dt);
+    AnimatedSprite::update(dt, weaponCooldown);
 }

@@ -30,7 +30,7 @@ AnimatedSprite::AnimatedSprite(const sf::Texture& texture, AnimationSpriteSettin
     setScale(DEFAULT_WEAPON_SCALE);
 }
 
-void AnimatedSprite::update(float dt)
+void AnimatedSprite::update(float dt, float animationCooldownDuration)
 {
     if (settings.totalFrames <= 0) return;
 
@@ -53,11 +53,12 @@ void AnimatedSprite::update(float dt)
 
             if (currentFrameIndex == 0)
             {
+                // @TODO Move into player to trigger on ALL weapons
                 // If animation is setup with a cooldown period, automate switch to IDLE state and start the cooldown timer
-                if (settings.animationCooldownDuration > 0.0f)
+                if (animationCooldownDuration > 0.0f)
                 {
                     currentState = AnimationState::IDLE;
-                    cooldownTimer = settings.animationCooldownDuration;
+                    cooldownTimer = animationCooldownDuration;
                     // Reset the set of enemies hit for the next attack cycle
                     enemiesHitThisAttack.clear();
                 }
@@ -72,5 +73,4 @@ void AnimatedSprite::update(float dt)
     }
 
     setTextureRect(frames[currentFrameIndex]);
-
 }

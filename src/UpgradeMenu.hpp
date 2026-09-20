@@ -1,16 +1,21 @@
+#pragma once
+
 #include <SFML/Graphics.hpp>
 #include "Main.hpp"
+#include "Upgrades.hpp"
 
 class UpgradeMenu : public sf::Transformable, public sf::Drawable
 {
 private:
     bool visible = false;
     int selectedIndex = 0;
+    // @TODO menuItems and menuUpgrades, should be one
     std::array<sf::Text, 3> menuItems;
     std::array<sf::RectangleShape, 3> buttonShapes;
     sf::RectangleShape backgroundBox;
 
 public:
+    std::array<Upgrade, 3> menuUpgrades;
     UpgradeMenu()
         : menuItems{sf::Text(GAME_FONT), sf::Text(GAME_FONT), sf::Text(GAME_FONT)}
     {
@@ -29,22 +34,67 @@ public:
         backgroundBox.setOutlineThickness(2.f);
         backgroundBox.setPosition(WINDOW_CENTER - (backgroundBoxSize / 2.f));
 
-        std::array<std::string, 3> labels = {"<upgrade_1>", "<upgrade_2>", "<upgrade_3>"};
+        // @TODO Hardcoded upgrades for now
+        /**
+         * UpgradeID upgradeId;     // Identifier type of upgrade
+         * unsigned short MaxLevel; // Max level of upgrade
+         * EffectType effectType;   // How the effect is applied in math operations
+         * float effectValue;       // How much is applied to the effect in operations
+         * sf::Sprite upgradeIcon;  // Icon for upgrade
+         * sf::String upgradeText;  // Text description of upgrade
+         */
+        // UPGRADE 1
+        Upgrade upgrade1{
+            .upgradeId = UpgradeID::RANGE,
+            .MaxLevel = 5,
+            .effectType = EffectType::PERCENTAGE,
+            .effectValue = 10,
+            //.upgradeIcon = sf::Sprite{},
+        };
+
+        // @TODO Font does not have decimal-point glyphs, need to convert into int
+        upgrade1.upgradeText = "Increase range of attacks by +" + std::to_string(static_cast<int>(upgrade1.effectValue)) + "%";
+
+        // UPGRADE 2
+        Upgrade upgrade2{
+            .upgradeId = UpgradeID::DAMAGE,
+            .MaxLevel = 5,
+            .effectType = EffectType::PERCENTAGE,
+            .effectValue = 10,
+            //.upgradeIcon = sf::Sprite{},
+        };
+
+        // @TODO Font does not have decimal-point glyphs, need to convert into int
+        upgrade2.upgradeText = "Increase damage of attacks by +" + std::to_string(static_cast<int>(upgrade2.effectValue)) + "%";
+
+        // UPGRADE 3
+        Upgrade upgrade3{
+            .upgradeId = UpgradeID::COOLDOWN,
+            .MaxLevel = 5,
+            .effectType = EffectType::PERCENTAGE,
+            .effectValue = 10,
+            //.upgradeIcon = sf::Sprite{},
+        };
+
+        // @TODO Font does not have decimal-point glyphs, need to convert into int
+        upgrade3.upgradeText = "Decrease cooldown of attacks by +" + std::to_string(static_cast<int>(upgrade3.effectValue)) + "%";
+
+        menuUpgrades = {upgrade1, upgrade2, upgrade3};
         for (size_t i = 0; i < 3; i++)
         {
             // Button background
-            buttonShapes[i].setSize(sf::Vector2f(200.f, 50.f));
+            buttonShapes[i].setSize(sf::Vector2f(UPGRADE_MENU_BUTTON_WIDTH, UPGRADE_MENU_BUTTON_HEIGHT));
             buttonShapes[i].setFillColor(sf::Color(50, 50, 50));
             buttonShapes[i].setPosition(sf::Vector2f(localStartX, localStartY + i * (UPGRADE_MENU_BUTTON_HEIGHT + UPGRADE_MENU_SPACING_BETWEEN_BUTTONS)));
             // Button text
-            menuItems[i].setString(labels[i]);
+            menuItems[i].setString(menuUpgrades[i].upgradeText);
             menuItems[i].setCharacterSize(24);
             menuItems[i].setFillColor(i == 0 ? sf::Color::Yellow : sf::Color::White);
 
             // Center text in button bounds
             sf::FloatRect textRect = menuItems[i].getLocalBounds();
             menuItems[i].setOrigin(textRect.getCenter());
-            sf::Vector2f menuItemPosition{buttonShapes[i].getPosition().x + 100.f, buttonShapes[i].getPosition().y + 25.f};
+            sf::Vector2f menuItemPosition{buttonShapes[i].getPosition().x + (UPGRADE_MENU_BUTTON_WIDTH / 2), buttonShapes[i].getPosition().y + (UPGRADE_MENU_BUTTON_HEIGHT / 2)};
             menuItems[i].setPosition(menuItemPosition);
         }
     }

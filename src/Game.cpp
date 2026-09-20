@@ -244,8 +244,11 @@ void Game::updateGUI()
                 initWorld(); // Initialize the world when transitioning to Playing state
             }
 
-            if (player->upgradeMenu->handleMouseClick(mousePosF) != -1)
+            int selectedIndex = player->upgradeMenu->handleMouseClick(mousePosF);
+            if (selectedIndex != -1)
             {
+                Upgrade upgrade = player->upgradeMenu->menuUpgrades[selectedIndex];
+                player->applyUpgrade(upgrade);
                 player->upgradeMenu->setVisible(false);
                 currentState = GameState::Playing;
             }
@@ -406,7 +409,7 @@ void Game::updateEnemies(float dt)
                 // Check if enemy is overlapping player's attack
                 if (checkCollision(enemies[i].get(), weapon.get()))
                 {
-                    enemies[i].get()->damage(10); // Arbitrary damage value for now
+                    enemies[i].get()->damage(player->getPlayerDamage());
                     weapon->enemiesHitThisAttack.insert(enemies[i].get()->getId());
                     if (enemies[i].get()->isDead())
                     {

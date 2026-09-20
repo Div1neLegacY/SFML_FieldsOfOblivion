@@ -20,6 +20,7 @@ private:
     EnemySettings settings;
     int health = 30;
     int enemyID; // Unique identifier for the enemy, useful for tracking hits
+    // @TODO Probably should no longer need the damage timer, was probably used to avoid multiple hits in single animation.
     float damageTimer = 0.0f; // Timer to track how long the enemy has been in a damaged state
     EnemyState enemyState = EnemyState::NORMAL; // Current state of the enemy
 public:

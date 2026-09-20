@@ -39,7 +39,7 @@ const sf::Vector2f WINDOW_CENTER     = sf::Vector2f{WINDOW_WIDTH / 2, WINDOW_HEI
  * GUI Element Constants
  */
 const unsigned int UPGRADE_MENU_BUTTON_HEIGHT = 50;
-const unsigned int UPGRADE_MENU_BUTTON_WIDTH = 200;
+const unsigned int UPGRADE_MENU_BUTTON_WIDTH = 500;
 const unsigned int UPGRADE_MENU_PADDING_AROUND_BUTTONS = 30;
 const unsigned int UPGRADE_MENU_SPACING_BETWEEN_BUTTONS = 20;
 
@@ -58,10 +58,9 @@ const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PAD
  */
 const auto DEFAULT_PLAYER_SCALE = sf::Vector2f{2, 2};
 const unsigned int MAX_HEALTH = 100;
-const unsigned int HIT_DAMAGE = 10;
 const float INVINCIBILITY_DURATION = 0.2f; // Invincibility duration in seconds after taking damage
 const int CHARACTER_SCALE = 2;
-const float ATTACK_COOLDOWN = 1.0f; // Cooldown duration in seconds between attacks
+const float DEFAULT_ATTACK_COOLDOWN = 1.0f; // Cooldown duration in seconds between attacks
 
 /**
  * Leveling Constants
@@ -92,6 +91,7 @@ const auto KB_MOVE_RIGHT = sf::Keyboard::Key::D;
 /**
  * Weapon Constants
  */
+const auto DEFAULT_WEAPON_DAMAGE = 10;
 const auto DEFAULT_WEAPON_SCALE = sf::Vector2f{4, 2};
 
 /**
@@ -107,7 +107,6 @@ const AnimationSpriteSettings DEFAULT_PLAYER_ANIMATION_SETTINGS = {
 const AnimationSpriteSettings DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS = {
     .totalFrames = get_sprite(SPRITE_PLAYER_ATTACK).frameCount,
     .frameRect = sf::IntRect({0, 0}, {64, 64}),
-    .animationCooldownDuration = ATTACK_COOLDOWN,
     .initialSpriteBlank = true
 };
 

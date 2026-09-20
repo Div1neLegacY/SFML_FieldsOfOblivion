@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "AnimatedSprite.hpp"
+#include "Upgrades.hpp"
 
 class Weapon : public AnimatedSprite
 {
@@ -16,5 +17,11 @@ public:
      */
     explicit Weapon(const sf::Texture&& texture, AnimationSpriteSettings settings) = delete;
 
-    void update(float dt) override;
+    void update(float dt, float animationCooldownDuration = 0.f) override;
+
+private:
+    /**
+     * Member Variables
+     */
+
 };
