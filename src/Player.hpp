@@ -6,6 +6,12 @@
 #include "Weapon.hpp"
 #include "UpgradeMenu.hpp"
 
+enum class PlayerState
+{
+    NORMAL,
+    INVINCIBLE,
+};
+
 class Player : public AnimatedSprite
 {
 public:
@@ -36,7 +42,21 @@ public:
      */
     void playerMoveRight();
 
-    inline float getPlayerDamage() { return currentWeaponDamage; };
+    float getPlayerDamage() const
+    {
+        return currentWeaponDamage;
+    }
+
+    bool isPlayerInvincible() const
+    {
+        return playerState == PlayerState::INVINCIBLE;
+    }
+
+    void startInvincibilityTimer()
+    {
+        invincibilityTimer = INVINCIBILITY_DURATION;
+        playerState = PlayerState::INVINCIBLE;
+    }
 
     std::unique_ptr<sf::View> camera;
     //HealthBar* healthBar;
@@ -52,7 +72,9 @@ private:
     /**
      * Member Variables
      */
-    float attackTimer = 0.0f; // Timer to track the cooldown period between attacks
+    PlayerState playerState = PlayerState::NORMAL;
+    float invincibilityTimer = 0.0f; // Timer to track the player's invincibility period
+    float attackTimer = 0.0f;        // Timer to track the cooldown period between attacks
     float currentWeaponDamage = DEFAULT_WEAPON_DAMAGE;      // Keeps track of player's damage
     float currentWeaponCooldown = DEFAULT_ATTACK_COOLDOWN;  // Keeps track of player's cooldown
     sf::Vector2f currentWeaponScale = DEFAULT_WEAPON_SCALE; // Keeps track of player's range

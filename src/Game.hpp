@@ -72,7 +72,6 @@ private:
 	sf::RectangleShape* healthBar;
 	ExpBar* expBar;
 	int currentHealth = MAX_HEALTH;
-	float invincibilityTimer = 0.0f;
 
 	// @todo Do later
     //std::unique_ptr<AnimatedSprite> player;

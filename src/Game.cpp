@@ -11,7 +11,7 @@ Game::Game()
 {
     window = new sf::RenderWindow( sf::VideoMode( { WINDOW_WIDTH, WINDOW_HEIGHT } ), "Fields of Oblivion" );
     window->setFramerateLimit(144);
-	window->setVerticalSyncEnabled(false);
+    window->setVerticalSyncEnabled(false);
     player = new Player();
 
     for (int i = 0; i < 30; i++)
@@ -33,15 +33,6 @@ Game::~Game()
 
 void Game::run()
 {
-	// while (this->window->isOpen())
-	// {
-	// 	this->updatePollEvents();
-
-	// 	if(this->player->getHp() > 0)
-	// 		this->update();
-
-	// 	this->render();
-	// }
 }
 
 void Game::initMainMenu()
@@ -313,7 +304,7 @@ void Game::updateInput()
 /**
  * Updates background sprite tiles to create an infinite background loop. Whenever
  * tiles are no longer on screen, use a conveyor-belt like system that wraps them
- * back around to be back in view of player camera. 
+ * back around to be back in view of player camera.
  */
 void Game::updateBackground()
 {
@@ -368,14 +359,9 @@ void Game::updateBackground()
 
 void Game::updateEnemies(float dt)
 {
-    // 1. Tick down the invincibility timer using delta time
-    if (invincibilityTimer > 0.0f)
-    {
-        invincibilityTimer -= dt;
-    }
-
     size_t i = 0;
-    while (i < enemies.size()) {
+    while (i < enemies.size())
+    {
         enemies[i]->update(dt);
 
         // Move the enemy towards the player
@@ -383,7 +369,7 @@ void Game::updateEnemies(float dt)
 
         // Check if enemy is overlapping player
         // Only damage the player if they are NOT currently invincible
-        if (checkCollision(enemies[i].get(), player) && invincibilityTimer <= 0.0f)
+        if (checkCollision(enemies[i].get(), player) && !player->isPlayerInvincible())
         {
             int arbitraryNum = 10;
             currentHealth -= arbitraryNum;
@@ -393,7 +379,7 @@ void Game::updateEnemies(float dt)
             healthBar->setSize(size);
 
             // Reset the timer to trigger the cooldown period
-            invincibilityTimer = INVINCIBILITY_DURATION; 
+            player->startInvincibilityTimer();
 
             // Optional: Break out early so multiple overlapping enemies 
             // don't stack damage on the exact same frame

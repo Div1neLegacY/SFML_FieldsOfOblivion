@@ -26,6 +26,17 @@ void Player::update(float dt)
     // Update player animation sprite
     AnimatedSprite::update(dt);
 
+    // Tick down the invincibility timer (if needed)
+    if (invincibilityTimer > 0.0f)
+    {
+        invincibilityTimer = std::max(0.0f, invincibilityTimer - dt);
+
+        if (invincibilityTimer == 0.0f)
+        {
+            playerState = PlayerState::NORMAL;
+        }
+    }
+
     // Update all weapon animations
     for (const auto& weapon : playerWeapons)
     {
