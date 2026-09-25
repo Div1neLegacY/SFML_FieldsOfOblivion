@@ -14,13 +14,6 @@ Game::Game()
     window->setVerticalSyncEnabled(false);
     player = new Player();
 
-    for (int i = 0; i < 30; i++)
-    {
-        auto enemy_ptr = std::make_unique<Enemy>(i);
-        enemy_ptr->setPosition(sf::Vector2f{i * 50.0f, 0});
-        enemies.push_back(std::move(enemy_ptr));
-    }
-
     initMainMenu();
     // Just initialize the pause menu, but don't load it yet.
     initPauseMenu();
@@ -123,10 +116,42 @@ void Game::initWorld()
     playingUIElements.push_back(healthBar);
 
     this->expBar = new ExpBar(300.f, 20.f);
+
+    this->timerText = std::make_unique<sf::Text>(GAME_FONT, sf::String("Time: 0s"), 30);
+    timerText->setFillColor(sf::Color::White);
+    timerText->setPosition(sf::Vector2f{20.f, 20.f});
+    // @TODO
+    //playingUIElements.push_back(timerText);
+}
+
+void Game::spawnEnemies()
+{
+    // Spawn single enemy at interval this method is called
+    auto enemy_ptr = std::make_unique<Enemy>(nextEnemyId++);
+    enemy_ptr->setPosition(sf::Vector2f{randomPointOffScreen()});
+    enemies.push_back(std::move(enemy_ptr));
+
+    // If bracket iterator is not at end of defined bracket list and
+    // the enemy minimum quota count is currently not achieved
+    if (currentEnemyBracket != ENEMY_WAVE_BRACKETS.end() && enemies.size() < currentEnemyBracket->first)
+    {
+        int enemiesToSpawn = currentEnemyBracket->first - enemies.size();
+        for (int i = 0; i < enemiesToSpawn; i++)
+        {
+            auto enemy_ptr = std::make_unique<Enemy>(nextEnemyId++);
+            enemy_ptr->setPosition(sf::Vector2f{randomPointOffScreen()});
+            enemies.push_back(std::move(enemy_ptr));
+        }
+    }
 }
 
 void Game::update(float dt)
 {
+    // Increment timers
+    minuteTimer += dt;
+    spawnRateTimer += dt;
+    elapsedGameTime += dt;
+
     updateGUI();
     updateInput();
     updatePauseMenu();
@@ -134,6 +159,9 @@ void Game::update(float dt)
 
     if (currentState == GameState::Playing)
     {
+        int displaySeconds = static_cast<int>(elapsedGameTime);
+        timerText->setString("Time: " + std::to_string(displaySeconds) + "s");
+
         updateWorld(dt);
     }
 
@@ -359,17 +387,38 @@ void Game::updateBackground()
 
 void Game::updateEnemies(float dt)
 {
-    size_t i = 0;
-    while (i < enemies.size())
+    // Check if 60 seconds (1 minute) have passed
+    if (minuteTimer >= 60.f)
     {
-        enemies[i]->update(dt);
+        // Update enemy bracket every minute
+        currentEnemyBracket++; // Forward iterators only move forward
+        printf("currentEnemyBracket->first: %d\n", currentEnemyBracket->first);
+        fflush(stdout);
+        // Reset the clock to start counting the next minute
+        minuteTimer = 0;
+    }
+
+    // Only spawn enemies at a specified rate
+    if (spawnRateTimer >= currentEnemyBracket->second)
+    {
+        spawnEnemies();
+        spawnRateTimer = 0;
+    }
+
+    int currentEnemyCount = enemies.size();
+    std::vector<Enemy*> enemiesQueuedForDestruction;
+
+    // Iterate and safely remove dead enemies after the loop completes
+    for (auto enemy = enemies.begin(); enemy != enemies.end(); ++enemy)
+    {
+        enemy->get()->update(dt);
 
         // Move the enemy towards the player
-        moveTowardsPlayer(dt, enemies[i].get(), player);
+        moveTowardsPlayer(dt, enemy->get(), player);
 
         // Check if enemy is overlapping player
         // Only damage the player if they are NOT currently invincible
-        if (checkCollision(enemies[i].get(), player) && !player->isPlayerInvincible())
+        if (checkCollision(enemy->get(), player) && !player->isPlayerInvincible())
         {
             int arbitraryNum = 10;
             currentHealth -= arbitraryNum;
@@ -381,7 +430,7 @@ void Game::updateEnemies(float dt)
             // Reset the timer to trigger the cooldown period
             player->startInvincibilityTimer();
 
-            // Optional: Break out early so multiple overlapping enemies 
+            // Optional: Break out early so multiple overlapping enemies
             // don't stack damage on the exact same frame
             break;
         }
@@ -390,28 +439,39 @@ void Game::updateEnemies(float dt)
         for (const auto& weapon : player->playerWeapons)
         {
             // Check if enemy was already hit during the current attack cycle
-            if (weapon->enemiesHitThisAttack.find(enemies[i].get()->getId()) == weapon->enemiesHitThisAttack.end())
+            if (weapon->enemiesHitThisAttack.find(enemy->get()->getId()) == weapon->enemiesHitThisAttack.end())
             {
                 // Check if enemy is overlapping player's attack
-                if (checkCollision(enemies[i].get(), weapon.get()))
+                if (checkCollision(enemy->get(), weapon.get()))
                 {
-                    enemies[i].get()->damage(player->getPlayerDamage());
-                    weapon->enemiesHitThisAttack.insert(enemies[i].get()->getId());
-                    if (enemies[i].get()->isDead())
+                    enemy->get()->damage(player->getPlayerDamage());
+                    weapon->enemiesHitThisAttack.insert(enemy->get()->getId());
+                    if (enemy->get()->isDead())
                     {
                         auto newExpOrb = std::make_unique<sf::Sprite>(SPRITE_EXP_ORB_SMALL_TEXTURE);
-                        newExpOrb->setPosition(enemies[i]->getPosition());
+                        newExpOrb->setPosition(enemy->get()->getPosition());
                         expOrbs.push_back(std::move(newExpOrb));
-                        enemies.erase(enemies.begin() + i);
-                        continue;
+                        enemiesQueuedForDestruction.push_back(enemy->get());
                     }
                 }
             }
-
-            i++;
         }
     }
 
+    // If any enemies were queued for destruction, remove from data structure
+    for (Enemy* enemyToRemove : enemiesQueuedForDestruction)
+    {
+        auto it = std::find_if(enemies.begin(), enemies.end(), [enemyToRemove](const auto& enemyPtr)
+        {
+            return enemyPtr.get() == enemyToRemove;
+        });
+
+        if (it != enemies.end())
+        {
+            enemies.erase(it);
+        }
+    }
+    
 
 }
 
@@ -482,6 +542,7 @@ void Game::render()
             }
 
             expBar->draw(*window);
+            window->draw(*timerText);
 
             // Apply your custom camera view before drawing world objects
             window->setView(*player->camera);

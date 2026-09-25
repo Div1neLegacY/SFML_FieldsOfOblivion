@@ -54,6 +54,7 @@ private:
 	void updatePauseMenu();
 	//void initGUI();
 	void initWorld();
+	void spawnEnemies();
 	//void initSystems();
 
 	//void initPlayer();
@@ -71,6 +72,7 @@ private:
 	// Health Bar
 	sf::RectangleShape* healthBar;
 	ExpBar* expBar;
+	std::unique_ptr<sf::Text> timerText;
 	int currentHealth = MAX_HEALTH;
 
 	// @todo Do later
@@ -90,11 +92,10 @@ private:
 	//Array<IRect, NUM_OF_TILE_ROWS * NUM_OF_TILE_COLUMNS> backgroundTiles;
 	std::vector<sf::Sprite> backgroundSprites;
 
-	// **DLL Hot Reloading**
-    using SetTitleFn = void (*)(sf::Text&, const char*);
-    void* dllHandle = nullptr;
-    SetTitleFn dllSetTitle = nullptr;
-    std::filesystem::file_time_type dllLastWrite{};
+	// Game accrued times
+	float minuteTimer = 0.f;
+	float spawnRateTimer = 0.f;
+	float elapsedGameTime = 0.f;
 	
 	//Resources
 	//std::map<std::string, sf::Texture*> textures;
@@ -118,4 +119,6 @@ private:
 	//float spawnTimer;
 	//float spawnTimerMax;
 	//std::vector<Enemy*> enemies;
+	int nextEnemyId = 1;
+	std::forward_list<std::pair<unsigned int, float>>::const_iterator currentEnemyBracket = ENEMY_WAVE_BRACKETS.begin();
 };

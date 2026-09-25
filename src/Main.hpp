@@ -75,7 +75,7 @@ const std::forward_list<std::pair<unsigned int, unsigned int>> LEVEL_BRACKETS
  */
 //const unsigned int ENEMY_HEALTH = 50;
 //const unsigned int ENEMY_DAMAGE = 20;
-const float DEFAULT_ENEMY_SPEED = 60.0f; // Pixels per second
+const float DEFAULT_ENEMY_SPEED = 50.0f; // Pixels per second
 
 /**
  * Keybinds (KB)
@@ -111,3 +111,12 @@ const AnimationSpriteSettings DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS = {
 };
 
 const AnimationSpriteSettings DEFAULT_ENEMY_ANIMATION_SETTINGS = {};
+
+/**
+ * Enemy Waves Constants
+ */
+const auto ENEMY_LIMIT = 300;
+const auto WAVE_INTERVAL_MINUTES = 1;
+// (Minimum enemy quota count, spawn interval rate) for each enemy wave bracket
+const std::forward_list<std::pair<unsigned int, float>> ENEMY_WAVE_BRACKETS
+    = {{5, 3.f}, {10, 2.8f}, {20, 2.6f}};
