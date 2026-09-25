@@ -65,6 +65,7 @@ const float DEFAULT_ATTACK_COOLDOWN = 1.0f; // Cooldown duration in seconds betw
 /**
  * Leveling Constants
  */
+const int EXP_FROM_ORB = 1;
 // 1-way list of each level-bracket and required XP to reach next level.
 const std::forward_list<std::pair<unsigned int, unsigned int>> LEVEL_BRACKETS
     = {{0, 10}, {10, 13}, {20, 16}};

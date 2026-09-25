@@ -199,7 +199,7 @@ void Game::update(float dt)
         {
             // Player has collected the orb
             expOrbs.erase(expOrbs.begin() + i);
-            player->addExp(1);
+            player->addExp(EXP_FROM_ORB);
             expBar->update(player->currentExp, player->currentLevelBracket->second, player->currentPlayerLevel);
             player->upgradeMenu->updateMouse(mousePosF);
         }

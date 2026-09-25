@@ -53,19 +53,25 @@ void Player::addExp(int amount)
     fflush(stdout);
 
     // Level-up player if they have enough experience
-    if (currentExp == currentLevelBracket->second)
+    if (currentExp >= currentLevelBracket->second)
     {
         upgradeMenu->setVisible(true);
-        currentExp = 0;
+        currentExp -= currentLevelBracket->second;
         currentPlayerLevel++;
         printf("currentPlayerLevel: %d\n", currentPlayerLevel);
         fflush(stdout);
 
-        // If bracket iterator is not at end of defined bracket list and
-        // current level reaches next bracket, then advance to next
-        if (currentLevelBracket != LEVEL_BRACKETS.end() && currentPlayerLevel == std::next(currentLevelBracket)->first)
+        // Stop leveling once the final bracket has been reached.
+        auto nextLevelBracket = std::next(currentLevelBracket);
+        if (nextLevelBracket == LEVEL_BRACKETS.end())
         {
-            currentLevelBracket++; // Forward iterators only move forward
+            return;
+        }
+
+        // If current level reaches the next bracket, advance to it.
+        if (currentPlayerLevel == nextLevelBracket->first)
+        {
+            currentLevelBracket = nextLevelBracket;
             printf("currentLevelBracket->first: %d\n", currentLevelBracket->first);
             fflush(stdout);
         }
