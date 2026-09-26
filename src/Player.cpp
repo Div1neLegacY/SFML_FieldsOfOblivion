@@ -53,7 +53,7 @@ void Player::addExp(int amount)
     fflush(stdout);
 
     // Level-up player if they have enough experience
-    if (currentExp >= currentLevelBracket->second)
+    while (currentExp >= currentLevelBracket->second)
     {
         upgradeMenu->setVisible(true);
         currentExp -= currentLevelBracket->second;

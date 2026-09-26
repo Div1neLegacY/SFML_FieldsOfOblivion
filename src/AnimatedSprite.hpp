@@ -29,7 +29,7 @@ private:
     AnimationState currentState;
     int currentFrameIndex = 0;
     float elapsedTime = 0.0f;
-    float frameDuration = 0.05f;
+    float frameDuration = 0.04f;
     float cooldownTimer = 0.0f; // Timer for tracking cooldown period
 
 public:
