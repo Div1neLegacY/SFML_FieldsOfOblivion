@@ -13,8 +13,13 @@ Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATIO
 
     // Create a new weapon. Replaces AnimatedSprite ^^^
     playerWeapons.emplace_back(std::make_unique<Weapon>(
-        SPRITE_PLAYER_ATTACK_TEXTURE,
-        DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS
+        SPRITE_WEAPON_SWORD_TEXTURE,
+        PLAYER_SWORD_WEAPON_ANIMATION_SETTINGS
+    ));
+
+    playerWeapons.emplace_back(std::make_unique<Weapon>(
+        SPRITE_WEAPON_BLAZE_BOOK_TEXTURE,
+        PLAYER_BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS
     ));
 
     upgradeMenu = std::make_unique<UpgradeMenu>();
@@ -40,7 +45,13 @@ void Player::update(float dt)
     // Update all weapon animations
     for (const auto& weapon : playerWeapons)
     {
-        weapon->setPosition(camera->getCenter() - sf::Vector2f{30, 30});
+        const sf::Vector2f offset = weapon->getOffset();
+        const float facingDirection = weapon->getScale().x < 0.f ? -1.f : 1.f;
+        const sf::Vector2f weaponPosition{
+            camera->getCenter().x - (offset.x * facingDirection),
+            camera->getCenter().y - offset.y
+        };
+        weapon->setPosition(weaponPosition);
         weapon->update(dt, currentWeaponCooldown);
     }
 }
@@ -97,13 +108,14 @@ void Player::applyUpgrade(Upgrade upgrade)
             float scalar = 1.0f + (upgrade.effectValue / 100.0f);
 
             // Update the vector
-            currentWeaponScale *= scalar;
-            printf("currentWeaponScale: { %f, %f }", currentWeaponScale.x, currentWeaponScale.y);
-            for (auto& weapon : playerWeapons)
-            {
-                weapon->setScale(currentWeaponScale);
-            }
-            break;
+            // @TODO comment out till we specify weapon to upgrade range
+            // currentWeaponScale *= scalar;
+            // printf("currentWeaponScale: { %f, %f }", currentWeaponScale.x, currentWeaponScale.y);
+            // for (auto& weapon : playerWeapons)
+            // {
+            //     weapon->setScale(currentWeaponScale);
+            // }
+            // break;
         }
         case UpgradeID::COOLDOWN:
         {
@@ -120,7 +132,6 @@ void Player::applyUpgrade(Upgrade upgrade)
 
 void Player::playerMoveLeft()
 {
-    sf::Vector2f flippedWeaponScale{ currentWeaponScale.x * -1.0f, currentWeaponScale.y };
     sf::Vector2f flippedPlayerScale{ DEFAULT_PLAYER_SCALE.x * -1.0f, DEFAULT_PLAYER_SCALE.y };
     setScale(flippedPlayerScale);
 
@@ -132,6 +143,8 @@ void Player::playerMoveLeft()
         // We don't want weapon animation to update direction mid-attack
         if (!weapon->isActive())
         {
+            sf::Vector2f currentWeaponScale = weapon->getScale();
+            sf::Vector2f flippedWeaponScale{ -std::abs(currentWeaponScale.x), currentWeaponScale.y };
             weapon->setScale(flippedWeaponScale);
         }
     }
@@ -149,7 +162,9 @@ void Player::playerMoveRight()
         // We don't want weapon animation to update direction mid-attack
         if (!weapon->isActive())
         {
-            weapon->setScale(currentWeaponScale);
+            sf::Vector2f currentWeaponScale = weapon->getScale();
+            sf::Vector2f flippedWeaponScale{ std::abs(currentWeaponScale.x), currentWeaponScale.y };
+            weapon->setScale(flippedWeaponScale);
         }
     }
 }

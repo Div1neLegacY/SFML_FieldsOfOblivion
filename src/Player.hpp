@@ -75,7 +75,7 @@ private:
     PlayerState playerState = PlayerState::NORMAL;
     float invincibilityTimer = 0.0f; // Timer to track the player's invincibility period
     float attackTimer = 0.0f;        // Timer to track the cooldown period between attacks
+    // @TODO Need to be reliant on weapons, not player. Remove later
     float currentWeaponDamage = DEFAULT_WEAPON_DAMAGE;      // Keeps track of player's damage
     float currentWeaponCooldown = DEFAULT_ATTACK_COOLDOWN;  // Keeps track of player's cooldown
-    sf::Vector2f currentWeaponScale = DEFAULT_WEAPON_SCALE; // Keeps track of player's range
 };

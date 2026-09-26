@@ -17,9 +17,14 @@ struct AnimationSpriteSettings
     int totalFrames;
     // Rectangle defining the frame size of the sprite
     sf::IntRect frameRect;
+    sf::Vector2f defaultScale;
+    sf::Vector2f positionOffset;
     // (Optional) Initialize frames with a blank sprite.
     // Useful for attack animations where the player is not attacking and we don't want to show the attack sprite.
     bool initialSpriteBlank = false;
+    // @TODO
+    // Duplicates animation and mirrors it. Good for multi-directional weapons
+    bool mirrorAnimation = false;
 };
 
 class AnimatedSprite : public sf::Sprite {
@@ -45,9 +50,14 @@ public:
         currentState = nextState;
     }
 
-    inline bool isActive()
+    bool isActive()
     {
         return currentState == AnimationState::ACTIVE;
+    }
+
+    sf::Vector2f getOffset()
+    {
+        return settings.positionOffset;
     }
 
     virtual void update(float dt, float animationCooldownDuration = 0.f);

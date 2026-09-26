@@ -10,6 +10,7 @@
 
 const std::filesystem::path SPRITE_ATLAS_MASTER = "assets/textures/TEXTURE_ATLAS_MASTER.png";
 const std::filesystem::path SPRITE_ATLAS_SWEEP_ANIMATION = "assets/textures/hit_animations/swing01.png";
+const std::filesystem::path SPRITE_ATLAS_WEAPON_BLAZE_BOOK_ANIMATION = "assets/textures/hit_animations_3/circle02.png";
 
 // #############################################################################
 //                           Assets Structs
@@ -20,7 +21,8 @@ enum SpriteID
 	SPRITE_DICE,
 	// Player Sprites
 	SPRITE_PLAYER,
-	SPRITE_PLAYER_ATTACK,
+	SPRITE_WEAPON_SWORD,
+	SPRITE_WEAPON_BLAZE_BOOK,
 	// Sprite Solids
 	SPRITE_SOLID_01,
 	SPRITE_SOLID_02,
@@ -86,7 +88,7 @@ inline Sprite get_sprite(SpriteID spriteID)
 			break;
 		}
 
-		case SPRITE_PLAYER_ATTACK:
+		case SPRITE_WEAPON_SWORD:
 		{
 			sprite.rectangle.position = {0, 0};
 			sprite.rectangle.size = {704, 64};
@@ -95,6 +97,15 @@ inline Sprite get_sprite(SpriteID spriteID)
 			break;
 		}
 
+		case SPRITE_WEAPON_BLAZE_BOOK:
+		{
+			sprite.rectangle.position = {0, 0};
+			sprite.rectangle.size = {512, 64};
+			sprite.file = SPRITE_ATLAS_WEAPON_BLAZE_BOOK_ANIMATION;
+			sprite.frameCount = 8;
+			break;
+		}
+		
 		case SPRITE_SOLID_01:
 		{
 			sprite.rectangle.position = {0, 16};

@@ -1,8 +1,8 @@
 #include "AnimatedSprite.hpp"
 #include "Main.hpp"
 
-AnimatedSprite::AnimatedSprite(const sf::Texture& texture, AnimationSpriteSettings settings)
-    : sf::Sprite(texture), settings(settings), currentState(AnimationState::ACTIVE)
+AnimatedSprite::AnimatedSprite(const sf::Texture& texture, AnimationSpriteSettings defaultSettings)
+    : sf::Sprite(texture), settings(defaultSettings), currentState(AnimationState::ACTIVE)
 {
     int startingX = 0;
 
@@ -27,7 +27,7 @@ AnimatedSprite::AnimatedSprite(const sf::Texture& texture, AnimationSpriteSettin
         setTextureRect(frames[currentFrameIndex]);
     }
 
-    setScale(DEFAULT_WEAPON_SCALE);
+    setScale(settings.defaultScale);
 }
 
 void AnimatedSprite::update(float dt, float animationCooldownDuration)

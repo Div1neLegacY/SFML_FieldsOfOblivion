@@ -15,7 +15,8 @@ const sf::Font GAME_FONT = sf::Font(GAME_TITLE_FONT_PATH);
  */
 const sf::Texture SPRITE_BUTTON_PLAY_TEXTURE   = sf::Texture(get_sprite(SPRITE_BUTTON_PLAY).file, false, get_sprite(SPRITE_BUTTON_PLAY).rectangle);
 const sf::Texture SPRITE_PLAYER_TEXTURE        = sf::Texture(get_sprite(SPRITE_PLAYER).file, false, get_sprite(SPRITE_PLAYER).rectangle);
-const sf::Texture SPRITE_PLAYER_ATTACK_TEXTURE = sf::Texture(get_sprite(SPRITE_PLAYER_ATTACK).file, false, get_sprite(SPRITE_PLAYER_ATTACK).rectangle);
+const sf::Texture SPRITE_WEAPON_SWORD_TEXTURE = sf::Texture(get_sprite(SPRITE_WEAPON_SWORD).file, false, get_sprite(SPRITE_WEAPON_SWORD).rectangle);
+const sf::Texture SPRITE_WEAPON_BLAZE_BOOK_TEXTURE = sf::Texture(get_sprite(SPRITE_WEAPON_BLAZE_BOOK).file, false, get_sprite(SPRITE_WEAPON_BLAZE_BOOK).rectangle);
 const sf::Texture SPRITE_TILE_GRASS_01_TEXTURE = sf::Texture(get_sprite(SPRITE_TILE_GRASS_01).file, false, get_sprite(SPRITE_TILE_GRASS_01).rectangle);
 const sf::Texture SPRITE_ENEMY_TEXTURE         = sf::Texture(get_sprite(SPRITE_SOLID_01).file, false, get_sprite(SPRITE_SOLID_01).rectangle);
 const sf::Texture SPRITE_EXP_ORB_SMALL_TEXTURE = sf::Texture(get_sprite(SPRITE_EXP_ORB_SMALL).file, false, get_sprite(SPRITE_EXP_ORB_SMALL).rectangle);
@@ -104,11 +105,21 @@ const AnimationSpriteSettings DEFAULT_PLAYER_ANIMATION_SETTINGS = {
     .frameRect = sf::IntRect({0, 0}, {17, 20}),
 };
 
-// Player Attack
-const AnimationSpriteSettings DEFAULT_PLAYER_ATTACK_ANIMATION_SETTINGS = {
-    .totalFrames = get_sprite(SPRITE_PLAYER_ATTACK).frameCount,
+// Weapons
+const AnimationSpriteSettings PLAYER_SWORD_WEAPON_ANIMATION_SETTINGS = {
+    .totalFrames = get_sprite(SPRITE_WEAPON_SWORD).frameCount,
     .frameRect = sf::IntRect({0, 0}, {64, 64}),
+    .defaultScale = sf::Vector2f{2, 1},
+    .positionOffset = sf::Vector2f{64.f, 32.f},
     .initialSpriteBlank = true
+};
+const AnimationSpriteSettings PLAYER_BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS = {
+    .totalFrames = get_sprite(SPRITE_WEAPON_BLAZE_BOOK).frameCount,
+    .frameRect = sf::IntRect({0, 0}, {64, 64}),
+    .defaultScale = sf::Vector2f{1.5, 1.5},
+    .positionOffset = sf::Vector2f{48.f, 48.f},
+    .initialSpriteBlank = true,
+    .mirrorAnimation = true
 };
 
 const AnimationSpriteSettings DEFAULT_ENEMY_ANIMATION_SETTINGS = {};
