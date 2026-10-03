@@ -2,11 +2,6 @@
 
 class ExpBar
 {
-private:
-    sf::RectangleShape background;
-    sf::RectangleShape fill;
-    sf::Text levelText; // Text object to display current level
-    float maxWidth;
 
 public:
     ExpBar(float width, float height)
@@ -49,4 +44,10 @@ public:
         window.draw(fill);
         window.draw(levelText); // Draw the text
     }
+
+private:
+    sf::RectangleShape background;
+    sf::RectangleShape fill;
+    sf::Text levelText; // Text object to display current level
+    float maxWidth;
 };

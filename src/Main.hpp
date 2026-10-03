@@ -1,14 +1,21 @@
 #pragma once
 
+#include <random>
 #include <forward_list>
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics.hpp>
 #include "Assets.hpp"
 #include "AnimatedSprite.hpp"
+#include "Weapon.hpp"
 
+
+/** 
+ * Game Constants
+ */
 const sf::String GAME_TITLE = "Fields of Oblivion";
 const std::filesystem::path GAME_TITLE_FONT_PATH = "assets/fonts/Star Crush.ttf";
 const sf::Font GAME_FONT = sf::Font(GAME_TITLE_FONT_PATH);
+
 
 /**
  * Sprite Constants
@@ -20,13 +27,16 @@ const sf::Texture SPRITE_WEAPON_BLAZE_BOOK_TEXTURE = sf::Texture(get_sprite(SPRI
 const sf::Texture SPRITE_TILE_GRASS_01_TEXTURE = sf::Texture(get_sprite(SPRITE_TILE_GRASS_01).file, false, get_sprite(SPRITE_TILE_GRASS_01).rectangle);
 const sf::Texture SPRITE_ENEMY_TEXTURE         = sf::Texture(get_sprite(SPRITE_SOLID_01).file, false, get_sprite(SPRITE_SOLID_01).rectangle);
 const sf::Texture SPRITE_EXP_ORB_SMALL_TEXTURE = sf::Texture(get_sprite(SPRITE_EXP_ORB_SMALL).file, false, get_sprite(SPRITE_EXP_ORB_SMALL).rectangle);
-
-
-const sf::Color BUTTON_HOVER_COLOR(50, 170, 90);   // Soft emerald green
-
 // Define the global values in exactly one source file
 const int GLOBAL_SPRITE_FRAME_WIDTH = 17;
 const int GLOBAL_SPRITE_FRAME_HEIGHT = 20;
+
+
+/**
+ * Color Constants
+ */
+const sf::Color BUTTON_HOVER_COLOR(50, 170, 90);   // Soft emerald green
+
 
 /**
  * Window Constants
@@ -36,6 +46,7 @@ const unsigned int WINDOW_HEIGHT = 720;
 const sf::Vector2f WINDOW_CENTER_TOP = sf::Vector2f{WINDOW_WIDTH / 2, 0};
 const sf::Vector2f WINDOW_CENTER     = sf::Vector2f{WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2};
 
+
 /**
  * GUI Element Constants
  */
@@ -44,6 +55,10 @@ const unsigned int UPGRADE_MENU_BUTTON_WIDTH = 500;
 const unsigned int UPGRADE_MENU_PADDING_AROUND_BUTTONS = 30;
 const unsigned int UPGRADE_MENU_SPACING_BETWEEN_BUTTONS = 20;
 
+
+/**
+ * World Constants
+ */
 constexpr int TILE_SIZE = 95;
 const sf::Vector2f BACKGROUND_TILE_SCALE{2, 2};
 // Window is around 7x4 tiles, but we use an extra padding of 1+ tile to accommodate
@@ -54,6 +69,7 @@ const unsigned int BEYOND_SCREEN_TILE_PADDING = 1;
 const unsigned int NUM_OF_BACKGROUND_TILE_COLUMNS = 7 + (2 * BEYOND_SCREEN_TILE_PADDING);
 const unsigned int NUM_OF_BACKGROUND_TILE_ROWS = 4 + (2 * BEYOND_SCREEN_TILE_PADDING);
 
+
 /**
  * Player Constants
  */
@@ -62,6 +78,7 @@ const unsigned int MAX_HEALTH = 100;
 const float INVINCIBILITY_DURATION = 0.2f; // Invincibility duration in seconds after taking damage
 const int CHARACTER_SCALE = 2;
 const float DEFAULT_ATTACK_COOLDOWN = 1.0f; // Cooldown duration in seconds between attacks
+
 
 /**
  * Leveling Constants
@@ -79,6 +96,7 @@ const std::forward_list<std::pair<unsigned int, unsigned int>> LEVEL_BRACKETS
 //const unsigned int ENEMY_DAMAGE = 20;
 const float DEFAULT_ENEMY_SPEED = 50.0f; // Pixels per second
 
+
 /**
  * Keybinds (KB)
  */
@@ -90,11 +108,6 @@ const auto KB_MOVE_DOWN = sf::Keyboard::Key::S;
 const auto KB_MOVE_LEFT = sf::Keyboard::Key::A;
 const auto KB_MOVE_RIGHT = sf::Keyboard::Key::D;
 
-/**
- * Weapon Constants
- */
-const auto DEFAULT_WEAPON_DAMAGE = 10;
-const auto DEFAULT_WEAPON_SCALE = sf::Vector2f{4, 2};
 
 /**
  * Animation Sprites Settings
@@ -104,16 +117,15 @@ const AnimationSpriteSettings DEFAULT_PLAYER_ANIMATION_SETTINGS = {
     .totalFrames = get_sprite(SPRITE_PLAYER).frameCount,
     .frameRect = sf::IntRect({0, 0}, {17, 20}),
 };
-
 // Weapons
-const AnimationSpriteSettings PLAYER_SWORD_WEAPON_ANIMATION_SETTINGS = {
+const AnimationSpriteSettings SWORD_WEAPON_ANIMATION_SETTINGS = {
     .totalFrames = get_sprite(SPRITE_WEAPON_SWORD).frameCount,
     .frameRect = sf::IntRect({0, 0}, {64, 64}),
     .defaultScale = sf::Vector2f{2, 1},
     .positionOffset = sf::Vector2f{64.f, 32.f},
     .initialSpriteBlank = true
 };
-const AnimationSpriteSettings PLAYER_BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS = {
+const AnimationSpriteSettings BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS = {
     .totalFrames = get_sprite(SPRITE_WEAPON_BLAZE_BOOK).frameCount,
     .frameRect = sf::IntRect({0, 0}, {64, 64}),
     .defaultScale = sf::Vector2f{1.5, 1.5},
@@ -121,8 +133,56 @@ const AnimationSpriteSettings PLAYER_BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS = {
     .initialSpriteBlank = true,
     .mirrorAnimation = true
 };
-
+// Enemies
 const AnimationSpriteSettings DEFAULT_ENEMY_ANIMATION_SETTINGS = {};
+
+
+/**
+ * Base Weapon Statistics
+ */
+// WEAPON: SWORD
+const BaseWeaponStats SWORD_STATS = {
+    .weapon = "Sword",
+    .description = "A sharp blade",
+    .baseDamage = 10.0f,
+    .maxLevel = 8,
+    .rarity = 100,
+    .effects = "None",
+    .unlockRequirements = "None"
+};
+// WEAPON: BLAZE BOOK
+const BaseWeaponStats BLAZE_BOOK_STATS = {
+    .weapon = "Blaze Book",
+    .description = "A book of fiery magic",
+    .baseDamage = 5.0f,
+    .maxLevel = 8,
+    .rarity = 70,
+    .effects = "Ignites enemies",
+    .unlockRequirements = "None"
+};
+
+
+/**
+ * Base Weapons
+ */
+const BaseWeapon SWORD = {
+    .stats = SWORD_STATS,
+    .animationSettings = SWORD_WEAPON_ANIMATION_SETTINGS
+};
+const BaseWeapon BLAZE_BOOK = {
+    .stats = BLAZE_BOOK_STATS,
+    .animationSettings = BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS
+};
+
+
+/**
+ * Weapon Constants
+ */
+const auto DEFAULT_WEAPON_DAMAGE = 10;
+const auto DEFAULT_WEAPON_SCALE = sf::Vector2f{4, 2};
+extern std::minstd_rand WEAPON_UPGRADE_GENERATOR;
+inline const std::vector<BaseWeapon> WEAPON_UPGRADE_TABLE = {SWORD, BLAZE_BOOK};
+
 
 /**
  * Enemy Waves Constants

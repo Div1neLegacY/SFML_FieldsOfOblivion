@@ -3,10 +3,11 @@
 #include <cmath> // Required for std::sqrt
 #include <cstdlib>
 #include <ctime>
+#include <stdexcept>
 #include "Main.hpp"
 
 /**
- * AI-Generated, accuracy not checked
+ * !! AI-Generated, accuracy not checked !!
  */
 static void moveTowardsPlayer(float dt, sf::Sprite* spriteToMove, sf::Sprite* targetSprite)
 {
@@ -51,7 +52,7 @@ static float calculateDamage(int base, float flat, float percentage, float multi
 }
 
 /**
- * AI-Generated, accuracy not checked
+ * !! AI-Generated, accuracy not checked !!
  */
 static sf::Vector2f randomPointOffScreen()
 {
@@ -81,4 +82,50 @@ static sf::Vector2f randomPointOffScreen()
         default: // Right edge
             return sf::Vector2f(WINDOW_WIDTH + margin, randomY);
     }
+}
+
+/**
+ * Pass in pseudo-random number generator and a weighted list of items to select from.
+ * Returns a random item from the list based on the weights.
+ * 
+ * @param gen A pseudo-random number generator (e.g., std::minstd_rand)
+ * @param items Custom struct/class type
+ * 
+ * @return A randomly selected item from the list based on the weights.
+ */
+template <typename T>
+T weightedRandomSelection(std::minstd_rand& gen, const std::vector<T>& items)
+{
+    static_assert(std::is_base_of_v<BaseWeapon, T>, "weightedRandomSelection only supports BaseWeapon-derived types.");
+
+    if (items.empty())
+    {
+        throw std::invalid_argument("weightedRandomSelection received an empty item list.");
+    }
+
+    int totalWeight = 0;
+    for (const auto& item : items)
+    {
+        totalWeight += item.stats.rarity;
+    }
+
+    if (totalWeight <= 0)
+    {
+        return items.front();
+    }
+
+    std::uniform_int_distribution<int> dist(0, totalWeight - 1);
+    const int randomValue = dist(gen);
+
+    int cumulativeWeight = 0;
+    for (const auto& item : items)
+    {
+        cumulativeWeight += item.stats.rarity;
+        if (randomValue < cumulativeWeight)
+        {
+            return item;
+        }
+    }
+
+    return items.back();
 }

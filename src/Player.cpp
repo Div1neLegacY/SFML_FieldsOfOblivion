@@ -14,12 +14,12 @@ Player::Player() : AnimatedSprite(SPRITE_PLAYER_TEXTURE, DEFAULT_PLAYER_ANIMATIO
     // Create a new weapon. Replaces AnimatedSprite ^^^
     playerWeapons.emplace_back(std::make_unique<Weapon>(
         SPRITE_WEAPON_SWORD_TEXTURE,
-        PLAYER_SWORD_WEAPON_ANIMATION_SETTINGS
+        SWORD_WEAPON_ANIMATION_SETTINGS
     ));
 
     playerWeapons.emplace_back(std::make_unique<Weapon>(
         SPRITE_WEAPON_BLAZE_BOOK_TEXTURE,
-        PLAYER_BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS
+        BLAZE_BOOK_WEAPON_ANIMATION_SETTINGS
     ));
 
     upgradeMenu = std::make_unique<UpgradeMenu>();

@@ -4,6 +4,24 @@
 #include "AnimatedSprite.hpp"
 #include "Upgrades.hpp"
 
+struct BaseWeaponStats
+{
+    // icon;
+    sf::String weapon;
+    sf::String description;
+    float baseDamage;
+    uint8_t maxLevel;
+    uint8_t rarity;
+    sf::String effects;
+    sf::String unlockRequirements;
+};
+
+struct BaseWeapon
+{
+    BaseWeaponStats stats;
+    AnimationSpriteSettings animationSettings;
+};
+
 class Weapon : public AnimatedSprite
 {
 public:
